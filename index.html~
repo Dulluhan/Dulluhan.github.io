@@ -95,7 +95,7 @@
                 <h2>About Me</h2>
                 <p>I am an Electrical Computer Engineering Student currently studying at the Univeristy of British Columbia!</p>
                 <p>Curently, other than side projects and school projects that I am working on, I am a member of UBC Snowbots! We are a team that competes at the Intelligent Ground Vehicle Competition every year. Check us out at <a href="Snowbots.ca"> UBC-Snowbots </a></p>
-                <p>Grayscale includes full HTML, CSS, and custom JavaScript files along with LESS files for easy customization.</p>
+                <p>I love programming, learning and am always doing my best to learn more. You can checkout what I have worked on 			<a class="page-scroll" href="#projects">Below</a></p>
             </div>
         </div>
     </section>
@@ -119,6 +119,28 @@
                 <div class="col-lg-8 col-lg-offset-2">
                     <h2>Projects</h2>
                     <p>Projects....</p>
+		    <div class = "row">
+			<div class = "col-md-4">
+				<div class="panel panel-default">
+				  <div class="panel-body">
+				    Basic panel example
+				  </div>
+				</div>
+			</div>
+			<div class = "col-md-4">
+				<div class="panel panel-default">
+				  <div class="panel-body">
+				    Basic panel example
+				  </div>
+				</div>
+			</div>
+			<div class = "col-md-4">
+				<div class="panel panel-default">
+				  <div class="panel-body">
+				    Basic panel example
+				  </div>
+				</div>
+			</div>
                     <a href="http://startbootstrap.com/template-overviews/grayscale/" class="btn btn-default btn-lg">Visit My Github</a>
                 </div>
             </div>
@@ -154,7 +176,7 @@
     <!-- Footer -->
     <footer>
         <div class="container text-center">
-            <p>Copyright &copy; Your Website 2014</p>
+            <p>Copyright &copy; Vincent Yuan 2015</p>
         </div>
     </footer>
 
@@ -168,7 +190,7 @@
     <script src="js/jquery.easing.min.js"></script>
 
     <!-- Google Maps API Key - Use your own API key to enable the map feature. More information on the Google Maps API can be found at https://developers.google.com/maps/ -->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"></script>
+    <!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"></script>-->
 
     <!-- Custom Theme JavaScript -->
     <script src="js/grayscale.js"></script>
