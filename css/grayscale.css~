@@ -274,10 +274,6 @@ a:focus {
         padding: 100px 0;
     }
 
-    #map {
-        height: 400px;
-        margin-top: 250px;
-    }
 }
 
 .btn {
@@ -356,14 +352,7 @@ img::-moz-selection {
 body {
     webkit-tap-highlight-color: rgba(255,255,255,.2);
 }
-.project-section {
-	background: #ffffff;
-	padding: 50px, 50px 
-	color: #000000;
-	margin-top: 50px;
-	margin-bottom: 50px; 
-	display: block
-}
+
 .project-section .container.col-lg-offset-2 .row .col-md-4 .panel.panel-default .panel-body{
 	 background: transparent !important;
 	 border:none !important;

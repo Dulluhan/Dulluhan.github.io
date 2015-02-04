@@ -96,6 +96,7 @@
                 <p>I am an Electrical Computer Engineering Student currently studying at the Univeristy of British Columbia!</p>
                 <p>Curently, other than side projects and school projects that I am working on, I am a member of UBC Snowbots! We are a team that competes at the Intelligent Ground Vehicle Competition every year. Check us out at <a href="Snowbots.ca"> UBC-Snowbots </a></p>
                 <p>I love programming, learning and am always doing my best to learn more. You can checkout what I have worked on 			<a class="page-scroll" href="#projects">Below</a></p>
+                 <a href="http://startbootstrap.com/template-overviews/grayscale/" class="btn btn-default btn-lg">More About Me</a>
             </div>
         </div>
     </section>
@@ -121,32 +122,32 @@
 		    <div class = "row">
 			<a href = "http://github.com/UBC-Snowbots/IGVC2015" style = "color: #ffffff">
 				<div class = "col-md-4">
-					<h5>Robotics Development</h5>
+					<h4>Robotics Development</h4>
 					<p>I develop the GPS software with ROS and C++ so that our robot knows where to go!</p>
 				</div>
 			</a>
 			<div class = "col-md-4">
-				<h5>Recrusive Pathfinding Algorithm</h5>
+				<h4>Recrusive Pathfinding Algorithm</h4>
 				<p>Learned and practiced recursive strategy to map navigation</p>
 			</div>
 			<a href = "http://github.com/Dulluhan/Easygit" style = "color: #ffffff">
 				<div class = "col-md-4">
-					<h5>Python GUI/Scripts </h5>
+					<h4>Python GUI/Scripts </h4>
 					<p>Built small tools to aid team members and myself in Linux desktop environments</p>
 				</div>
 			</a>
                     </div>
 		   <div class = "row">
 			<div class = "col-md-4">
-				<h5>ARM based FPGA Design</h5>
+				<h4>ARM based FPGA Design</h4>
 				<p>Designed an FPGA chip with VHDL on an Altera DE2 Board based on the ARM assembly architecture</p>
 			</div>
 			<div class = "col-md-4">
-				<h5>Designed Common Devices with 8052 Assembly Language</h5>
+				<h4>Designed Common Devices with 8052 Assembly Language</h4>
 				<p>Designed alarm clock, digital to analog converter, analog to digital converter, temperature logger on Alter DE2 Board</p>
 			</div>
 			<div class = "col-md-4">
-				<h5>Other practiced projects in C</h5>
+				<h4>Other practiced projects in C</h4>
 				<p>DNA parser and comparator, PageRank Algorithm with Matlab integration, Fourier transformation for waves</p>
 			</div>
                     </div>
