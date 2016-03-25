@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>C4Coffee</title>
+    <description>&gt; Engineer. Robot. Coffee.
+</description>
+    <link>http://c4coffee.ca/Blog/</link>
+    <atom:link href="http://c4coffee.ca/Blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Fri, 25 Mar 2016 00:13:06 -0700</pubDate>
+    <lastBuildDate>Fri, 25 Mar 2016 00:13:06 -0700</lastBuildDate>
+    <generator>Jekyll v3.1.2</generator>
+    
+      <item>
+        <title>Setting Up ChromeOS for ROS</title>
+        <description>&lt;p&gt;This post will be focused on listing the preliminary setup requied to facilitate ROS on Chromebooks. The Chromebook that I will be using through this post will be a c720 (2gb/2995U).&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;~~~&lt;/p&gt;
+
+&lt;p&gt;To start it is important to discuss the different options that are offered to Chromebooks for running Linux. If your are just getting into the Chromebook lineup, you probably have heard about Chrubuntu and Crouton. Here are my 2cents on the differnce:&lt;/p&gt;
+
+&lt;h1 id=&quot;chrubuntuhttpswwwredditcomrchrubuntucomments1rsxkdlistoffixesforxubuntu1310ontheacerc720&quot;&gt;&lt;a href=&quot;https://www.reddit.com/r/chrubuntu/comments/1rsxkd/list_of_fixes_for_xubuntu_1310_on_the_acer_c720&quot;&gt;Chrubuntu&lt;/a&gt;&lt;/h1&gt;
+&lt;p&gt; Chrubuntu is essentially a hack to bring any Linux distro of your choice in replacement of ChromeOS that comes with your chromebook. I have used this for the longest time in the past and it has caused me more problems than not. Particularily hardware compatibiltiy is the primary concern. From fixing the trackpad to optimizing chrome on a clean linux install, its just not worth the effort in my personal opinion. 
+&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;croutonhttpsgithubcomdnschneidcrouton&quot;&gt;&lt;a href=&quot;https://github.com/dnschneid/crouton&quot;&gt;Crouton&lt;/a&gt;&lt;/h1&gt;
+&lt;p&gt;Crouton stands for ChRomium Os Universal chrooT envirONment. Understanding crouton from the surface is that you are essentially running ChromeOS parallel to a distro of your choice. I resorted to Crouton again after a whole year of Chrubuntu simply because I was sick of dealing with the trackpad and processor problems after os updates with Chrubuntu.     
+&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;~~~&lt;/p&gt;
+
+&lt;p&gt;In the end of the day I picked crouton, and what I am left with all the benefits of optimized software from Chromebook and the power of a fully functional linux distro. Besides, having a chromeOS operating a robot is hilarious.&lt;/p&gt;
+
+&lt;p&gt;Now to discuss somethings that will make your ROS setup and usage smooth:&lt;/p&gt;
+
+&lt;h1 id=&quot;xiwihttpsgithubcomdnschneidcroutonwikicrouton-in-a-chromium-os-window-xiwi&quot;&gt;&lt;a href=&quot;https://github.com/dnschneid/crouton/wiki/crouton-in-a-Chromium-OS-window-(xiwi)&quot;&gt;xiwi&lt;/a&gt;&lt;/h1&gt;
+
+&lt;p&gt;Xiwi is just X11 in a window. Rather than having to switch between workspaces using the ctrl+shift+alt+F1 “shortcut”, you can just have your chroot (crouton instance) running in a window. The whole concept is just -x forwarding your workplace to the chromOS bash shell.&lt;/p&gt;
+
+&lt;p&gt;To install xiwi you can include the installation of it at the initial setup of your chroot.&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo sh ~/Downloads/crouton -t xiwi,xfce&lt;/code&gt;&lt;br /&gt;
+In the case where you decide to use xubuntu as your chroot distro.&lt;/p&gt;
+
+&lt;p&gt;Alternatively you can upgrade your current chroot. For example, if I was using ubuntu precise, I can update it via: 
+&lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo sh ~/Downloads/crouton -n precise -u -t xiwi&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;After installation, if you would like to run instances of your chroot you can just -x forward it to xiwi: 
+&lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo distro -X xiwi&lt;/code&gt;  eg. $ sudo startxfce4 -X xiwi&lt;/p&gt;
+
+&lt;p&gt;If you just want to run the CLI, you can run: 
+&lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo enter-chroot&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo enter-chroot -n chroot_name&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;You can even run specific programs like so: 
+&lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo enter-chroot&lt;/code&gt; followed by &lt;code class=&quot;highlighter-rouge&quot;&gt;$ xiwi -T arduino&lt;/code&gt;(tab) or &lt;code class=&quot;highlighter-rouge&quot;&gt;$ xiwi -F arduino&lt;/code&gt;(window) after you enter your chroot. Further, by adding &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;amp;&lt;/code&gt; to indicate that you want to run the program with the terminal prompt still being available. 
+Forwarded programs can be killed via &lt;code class=&quot;highlighter-rouge&quot;&gt;$ kill&lt;/code&gt; or simply closing the window/tab.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;ros-installation-notes&quot;&gt;ROS Installation Notes&lt;/h1&gt;
+
+&lt;p&gt;One of the only crippling problem that took me a bit to fix was that ROS could would not install on xfce that I had setup on my initial install of crouton. After some research I realized that the version of xubuntu I was running was not supported. It is important to note that I am setting up ROS-indigo for compatibility with my teams’ code&lt;/p&gt;
+
+&lt;p&gt;After reading the &lt;a href=&quot;http://wiki.ros.org/indigo/Installation/Ubuntu&quot;&gt;ROS-indgo’s installation page&lt;/a&gt; I realized that Precise was no longer supported. I therefore had to do an &lt;a href=&quot;https://github.com/dnschneid/crouton/wiki/Upgrade-chroot-release&quot;&gt;OS update to Trusty&lt;/a&gt;. After that a simple installation &lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo apt-get install ros-indigo-desktop-full&lt;/code&gt; was able to set me up.&lt;/p&gt;
+
+&lt;p&gt;Don’t forget to &lt;code class=&quot;highlighter-rouge&quot;&gt;$ source /opt/ros/indigo/setup.bash&lt;/code&gt; or echo it into your .bashrc as I scratched my head over &lt;code class=&quot;highlighter-rouge&quot;&gt;$ roscore&lt;/code&gt; giving me &lt;code class=&quot;highlighter-rouge&quot;&gt;command not found&lt;/code&gt; for the longest time.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;other-software&quot;&gt;Other Software&lt;/h1&gt;
+
+&lt;p&gt;Originally the thing I was most concerned with was my control over serial or networking ports. As my job surrounds alot around testing firmware 
+via USB, I was worried that chromebooks would have some security feature that would lock it up to prevent me from accessing them. But lo and behold:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://www.dropbox.com/s/8agwotmdphbw1eq/Screenshot%202016-03-24%20at%2011.11.53%20PM.png?raw=1&quot; class=&quot;img-thumbnail&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Also to verify, the permissions carry over in chroot:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://www.dropbox.com/s/7q1h4ccf8m6zhrs/Screenshot%202016-03-24%20at%2011.14.57%20PM.png?raw=1&quot; class=&quot;img-thumbnail&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Then I also tested program’s abilities to access these ports. Eg. Arduino. A easy blinky test on an uno showed that everything seems to be setup for development. Installing arduino in the chroot, I ran &lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo xiwi -F arduino&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://www.dropbox.com/s/0h1y9ainpfhxeuh/Screenshot%202016-03-25%20at%2012.07.50%20AM.png?raw=1&quot; class=&quot;img-thumbnail&quot; /&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 24 Mar 2016 00:00:00 -0700</pubDate>
+        <link>http://c4coffee.ca/Blog/ros/2016/03/24/Setting-Up-ChromeOS-For-ROS.html</link>
+        <guid isPermaLink="true">http://c4coffee.ca/Blog/ros/2016/03/24/Setting-Up-ChromeOS-For-ROS.html</guid>
+        
+        
+        <category>ROS</category>
+        
+      </item>
+    
+      <item>
+        <title>ChromeOS as a Robotics Platform</title>
+        <description>&lt;p&gt;After purging my old setup for the blog since it was empty and gross, I decide to start the fresh blog with an useful post. After 9 hours of testing and tweaking I finally removed chrubuntu from my c720 and installed crouton with xfce::ubuntu14.04 (Which is very important as ROS-indigo does not support 10.2 which is default with crouton)&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://www.dropbox.com/s/kqe8xq0li0e227x/Screenshot%202016-03-23%20at%2011.35.12%20PM.png?raw=1&quot; class=&quot;img-thumbnail&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The beauty of this setup however lies in the fact that I can run a suite of tools that are essential for my job on the team to produce software and firmware. This includes being able to build our system under Robotics Operating System(ROS) and arduino code for the firmware side.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://www.dropbox.com/s/0cl6i39zlq3z8yo/Screenshot%202016-03-23%20at%2011.57.23%20PM.png?raw=1&quot; class=&quot;img-thumbnail&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It is midnight so ideally, in the next few days I can put up a few more posts regarding not only setting up ROS on chromeOS but also some jekyll tutorials since there were certain things that took me a while to learn. As I start writing more posts I will also be able to add some more setup screen shots once my c100 gets here for me to abuse.&lt;/p&gt;
+
+</description>
+        <pubDate>Wed, 23 Mar 2016 23:18:42 -0700</pubDate>
+        <link>http://c4coffee.ca/Blog/ros/2016/03/23/chromeOS-as-a-robotics-platform.html</link>
+        <guid isPermaLink="true">http://c4coffee.ca/Blog/ros/2016/03/23/chromeOS-as-a-robotics-platform.html</guid>
+        
+        
+        <category>ROS</category>
+        
+      </item>
+    
+  </channel>
+</rss>
