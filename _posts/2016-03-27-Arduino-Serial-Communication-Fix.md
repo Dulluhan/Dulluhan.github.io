@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Arduino Serial Communication Problem and Fix" 
-date: 
+date: 2016-03-27 
 catergories: Arduino
 comments: true
 ---
