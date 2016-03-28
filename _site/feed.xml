@@ -6,9 +6,42 @@
 </description>
     <link>http://c4coffee.ca/</link>
     <atom:link href="http://c4coffee.ca/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 25 Mar 2016 00:38:53 -0700</pubDate>
-    <lastBuildDate>Fri, 25 Mar 2016 00:38:53 -0700</lastBuildDate>
+    <pubDate>Sun, 27 Mar 2016 23:03:22 -0700</pubDate>
+    <lastBuildDate>Sun, 27 Mar 2016 23:03:22 -0700</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
+    
+      <item>
+        <title>Arduino Serial Communication Problem and Fix</title>
+        <description>&lt;p&gt;Since the primary work I do is interfacing ROS with microcontrollers for sensor/actuator controls, I would like to share a problem that you may often encounter when doing any time of data transmission.&lt;/p&gt;
+
+&lt;p&gt;Of course there may be more elegant ways of solving this issues if these are even issues. But from what I observed before and after the fixes, my hypothesis for the problems seemed to be solved.&lt;/p&gt;
+
+&lt;h1 id=&quot;buffer-flushing-for-arduinos&quot;&gt;Buffer Flushing for arduinos&lt;/h1&gt;
+&lt;p&gt;Problem: When ROS loops are running at a frequency much higher than the arduino can process incoming commands, you may get problems with data in your buffer either holding too much, or not being processed correctly.&lt;/p&gt;
+
+&lt;p&gt;Situation: Our method of actuator resolves around sending custom &lt;a href=&quot;http://docs.ros.org/api/geometry_msgs/html/msg/Twist.html&quot;&gt;twist messages&lt;/a&gt; that have the format of: (Lx, Ly, Az). Where Lx/Ly is linear x,y and Az is angular z. What they give us are the motion commands of moving forwards, sideways and turning.&lt;/p&gt;
+
+&lt;p&gt;When the robot is hooked up to our laptop via USB, we are constantly bombarding the arduino serial port with multiple twist messages a second. I have observed that under certain circumstances, the arduino will either process messages with slight delay to the computed twist messages, or it will competely “hang” and freeze the serial port.&lt;/p&gt;
+
+&lt;p&gt;Of course the first solution I thought of was to flush the buffer via &lt;code class=&quot;highlighter-rouge&quot;&gt;Serial.flush();&lt;/code&gt; for the arduino to always process the newest data. However, what I did not know was that the arduino’s flush function under the HardwareSerial.h library was flushing the output buffer not the input buffer, therefore I had to dig around on the internet to see what &lt;a href=&quot;https://forum.sparkfun.com/viewtopic.php?f=32&amp;amp;t=32715&quot;&gt;others have done to fix this problem.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Solution: Adding a function to the HarwareSerial.cpp file in the Arduino library files.&lt;/p&gt;
+
+&lt;p&gt;For the .h, add a new function declaration &lt;code class=&quot;highlighter-rouge&quot;&gt;virtual void flushRX();&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;For the .cpp, add the rest of the function:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HardwareSerial&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flushRX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;_rx_buffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_rx_buffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tail&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+</description>
+        <pubDate>Sun, 27 Mar 2016 00:00:00 -0700</pubDate>
+        <link>http://c4coffee.ca/2016/03/27/Arduino-Serial-Communication-Fix.html</link>
+        <guid isPermaLink="true">http://c4coffee.ca/2016/03/27/Arduino-Serial-Communication-Fix.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Setting Up ChromeOS for ROS</title>

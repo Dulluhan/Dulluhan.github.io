@@ -16,6 +16,7 @@ github_username: Dulluhan
 
 # Build settings
 markdown: kramdown
+  # gem:[archivegenerator, monthly_archive_plugin, category_archive_plugin, sitemap_generator]
 
 #sitemap settings
 sitemap:file: "../sitemap.xml"
