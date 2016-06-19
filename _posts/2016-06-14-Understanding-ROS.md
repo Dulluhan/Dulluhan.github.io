@@ -8,6 +8,7 @@ comments: true
 Recently I've been reached out via email, A2A about the function of ROS. For people who are new to ROS, it is hard to grasp what ROS is and why we need it. Below is a copy of the question, link to the question, and my answer. 
 <p align="center">~~~</p>
 # [Question: What is the role of ROS in a complete robot?](http://answers.ros.org/question/237411/what-is-the-role-of-ros-in-a-complete-robot/#237420)
+
 Hi,
 
 After raising this question, I've realized that, unlike what I've known as an iOS developer that iOS is almost the only thing we developers should concern, ROS itself is not an operating system but a framework, a set of libraries. And besides that, what a robot exposes to developers are far more than an iPhone does. So these are all new concepts for me to absorb and it may take a while ;)
