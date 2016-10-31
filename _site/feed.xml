@@ -4,11 +4,118 @@
     <title>C4Coffee</title>
     <description>&gt; Engineer. Robot. Coffee.
 </description>
-    <link>http://c4coffee.ca/</link>
-    <atom:link href="http://c4coffee.ca/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 27 Mar 2016 23:08:27 -0700</pubDate>
-    <lastBuildDate>Sun, 27 Mar 2016 23:08:27 -0700</lastBuildDate>
-    <generator>Jekyll v3.1.2</generator>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sun, 30 Oct 2016 23:29:36 -0700</pubDate>
+    <lastBuildDate>Sun, 30 Oct 2016 23:29:36 -0700</lastBuildDate>
+    <generator>Jekyll v3.3.0</generator>
+    
+      <item>
+        <title>DIY AM Radio Design - Part1: Background</title>
+        <description>&lt;p&gt;As part of a project course over the summer, we were tasked to build a self-powered AM radio with easy assembly. The motivations were as follows:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Easy assembly allows good education material for younger children&lt;/li&gt;
+  &lt;li&gt;Self-powering allows for use during emergency situations&lt;/li&gt;
+  &lt;li&gt;There is good AM radio coverage in the Vancouver area&lt;/li&gt;
+  &lt;li&gt;FM radios are slightly more complicated than AM radio&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Below are sections extracted from our team’s final report.&lt;/p&gt;
+
+&lt;h2 id=&quot;construction-background&quot;&gt;Construction Background&lt;/h2&gt;
+
+&lt;p&gt;Shown below is a block diagram of what we recognized as the major components required for the construction of an AM radio.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/2016-10-30.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The &lt;b&gt;RF(Radio Frequency) receiver&lt;/b&gt; is an electrical component that captures electromagnetic waves in the radio frequency range and converts it to electrical power. &lt;br /&gt;
+Our &lt;b&gt;RF selection mechanism&lt;/b&gt; is essentially a frequency filter that will allow us to choose the frequency at which we are listening to. It is important to note that in most cases, the RF receiver does not exclusively receive one single channel, therefore a filter is required to filter out other channels we do not want. &lt;br /&gt;
+The next important step is to amplify the RF signal received. But from research it was realized quickly that RF amplification was not an easy task, and that for the applications of our project it was unnecessary.  &lt;br /&gt;
+Since there was no RF Amplification, &lt;b&gt;AF(Audio Frequency) Amplification&lt;/b&gt; was necessary after &lt;b&gt;Demodulation&lt;/b&gt; where the carrier signal was separated from our modulated signal.&lt;/p&gt;
+
+&lt;h2 id=&quot;signal-processing-background&quot;&gt;Signal Processing Background&lt;/h2&gt;
+
+&lt;p&gt;The most important concept to learn for this project was the theory behind modulation. In the simplest terms, AM modulation simply meant that we have a very fast oscillating &lt;b&gt;carrier signal&lt;/b&gt; that was representing itself as our &lt;b&gt;information signal&lt;/b&gt;, which are the audio signals from the radio stations in our case.&lt;/p&gt;
+
+&lt;p&gt;&lt;img style=&quot;display: flex; justify-content: center;&quot; src=&quot;https://upload.wikimedia.org/wikipedia/commons/a/a4/Amfm3-en-de.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;To understand &lt;b&gt;demodulation&lt;/b&gt; it would be important to understand how to interpret the signals. Sine signals can be represented by two peaks at +/- of their frequencies. Like below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://blogs.mathworks.com/images/steve/2009/F_cos_t.png&quot; alt=&quot;mathworks&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;With the combination of our modulated signal and our carrier signal, we will get something that looks more like:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/AM_spectrum.svg/600px-AM_spectrum.svg.png&quot; alt=&quot;wikipedia&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Where the signal above is the signal we are modulating, and the signals below is our same signal after modulation. It can be observed that the original signal centered is now separated into two signals at higher frequencies. This is because, our original signal is now being represented by a signal that oscillates at higher frequencies.&lt;/p&gt;
+
+&lt;p&gt;Image sources:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/File:Amfm3-en-de.gif&quot;&gt;Wikepedia: Amplitude Modulation GIF&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blogs.mathworks.com/steve/2010/05/27/negative-frequencies/&quot;&gt;Mathworks Blogs: Steve Eddins on Negative Frequencies&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/File:AM_spectrum.svg&quot;&gt;Wikipedia: Amplitude Modulation AM Spectrum&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sun, 30 Oct 2016 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2016/10/30/diy-am-radio.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/10/30/diy-am-radio.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Understanding ROS</title>
+        <description>&lt;p&gt;Recently I’ve been reached out via email, A2A about the function of ROS. For people who are new to ROS, it is hard to grasp what ROS is and why we need it. Below is a copy of the question, link to the question, and my answer.&lt;/p&gt;
+&lt;p align=&quot;center&quot;&gt;~~~&lt;/p&gt;
+
+&lt;h1 id=&quot;question-what-is-the-role-of-ros-in-a-complete-robothttpanswersrosorgquestion237411what-is-the-role-of-ros-in-a-complete-robot237420&quot;&gt;&lt;a href=&quot;http://answers.ros.org/question/237411/what-is-the-role-of-ros-in-a-complete-robot/#237420&quot;&gt;Question: What is the role of ROS in a complete robot?&lt;/a&gt;&lt;/h1&gt;
+
+&lt;p&gt;Hi,&lt;/p&gt;
+
+&lt;p&gt;After raising this question, I’ve realized that, unlike what I’ve known as an iOS developer that iOS is almost the only thing we developers should concern, ROS itself is not an operating system but a framework, a set of libraries. And besides that, what a robot exposes to developers are far more than an iPhone does. So these are all new concepts for me to absorb and it may take a while ;)&lt;/p&gt;
+
+&lt;p&gt;My question is, what’s the role of ROS in a robot?&lt;/p&gt;
+
+&lt;p&gt;Can someone please give us a detailed explanation of what a robot is generally comprised of, with examples? Say in Roomba, I know it has its own operating system; what part of Roomba plays a similar role as ROS?&lt;/p&gt;
+
+&lt;p&gt;Thanks,&lt;/p&gt;
+
+&lt;p&gt;snakeninny&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;~~~&lt;/p&gt;
+
+&lt;p&gt;Hello snakeninny,&lt;/p&gt;
+
+&lt;p&gt;At this point in your research I hope you now understand the concept of nodes and packages in ROS, or simply the existence of them. Due to the complexity of a lot of the decisions made or computations being performed by the robot, it is no longer feasible for all of the software to be written in one package. Therefore a lot of functionalities are grouped into these nodes and executed together.&lt;/p&gt;
+
+&lt;p&gt;From your background, you can understand these nodes as objects that does different things. Eg. A node that processes computer vision; an eye object. A node that processes speech; an mouth object. A node that processes actuator controls, a cerebellum object. Objects in a OOD sense.&lt;/p&gt;
+
+&lt;p&gt;What ROS as an “operating system” does is to facilitate a framework where these nodes can all communicate with one another to perform complex tasks that requires simultaneous stimuli from different sensors and perform calculations.&lt;/p&gt;
+
+&lt;p&gt;The Roomba is a very simple robot compared to other systems you may see being created with ROS. A Roomba replica can easily be created with an Arduino. It’s like comparing a goldfish to a human brain. We can no doubt sleep, eat and move as a goldfish can; just like how a ROS system can do what a Roomba does. But in cases where you want to be able to tell the difference between what you are eating, or being able to dance, a goldfish cannot do that.&lt;/p&gt;
+
+&lt;p&gt;In most cases, I like to think of micro controllers like the arduino as controllers for individual components, taking orders from individual nodes. Eg. A movement node says it wants to move forward, and the arduino controls the ESC on the robot to move the motor. The arduino knows how to turn, how to activate motors, but it will not be smart enough to know how to move to properly tango.&lt;/p&gt;
+
+&lt;p&gt;A usual chain of command in systems I work with looks something like:&lt;/p&gt;
+
+&lt;p&gt;Sensors detect object
+AI node uses other sensors to decide what type of object it is
+AI decides that it needs to move left-forward-right to avoid the object
+Movement node receives left-forward-right command from AI
+Movement node sends left, forward, right as seperate commands to the Arduino that controlls the motors, checking between commands that the robot is moving correctly.
+All this is based off of my own understanding and experience with ROS, and ROS can certainly be more complex or simple depending on the application. But hopefully this is a starting point for you.&lt;/p&gt;
+
+&lt;p&gt;Cheers, Dulluhan&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;~~~&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 14 Jun 2016 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2016/06/14/Understanding-ROS.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/06/14/Understanding-ROS.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Arduino Serial Communication Problem and Fix</title>
@@ -37,8 +144,8 @@
 
 </description>
         <pubDate>Sun, 27 Mar 2016 00:00:00 -0700</pubDate>
-        <link>http://c4coffee.ca/2016/03/27/Arduino-Serial-Communication-Fix.html</link>
-        <guid isPermaLink="true">http://c4coffee.ca/2016/03/27/Arduino-Serial-Communication-Fix.html</guid>
+        <link>http://localhost:4000/2016/03/27/Arduino-Serial-Communication-Fix.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/03/27/Arduino-Serial-Communication-Fix.html</guid>
         
         
       </item>
@@ -117,8 +224,8 @@ via USB, I was worried that chromebooks would have some security feature that wo
 
 </description>
         <pubDate>Thu, 24 Mar 2016 00:00:00 -0700</pubDate>
-        <link>http://c4coffee.ca/ros/2016/03/24/Setting-Up-ChromeOS-For-ROS.html</link>
-        <guid isPermaLink="true">http://c4coffee.ca/ros/2016/03/24/Setting-Up-ChromeOS-For-ROS.html</guid>
+        <link>http://localhost:4000/ros/2016/03/24/Setting-Up-ChromeOS-For-ROS.html</link>
+        <guid isPermaLink="true">http://localhost:4000/ros/2016/03/24/Setting-Up-ChromeOS-For-ROS.html</guid>
         
         
         <category>ROS</category>
@@ -139,8 +246,8 @@ via USB, I was worried that chromebooks would have some security feature that wo
 
 </description>
         <pubDate>Wed, 23 Mar 2016 23:18:42 -0700</pubDate>
-        <link>http://c4coffee.ca/ros/2016/03/23/chromeOS-as-a-robotics-platform.html</link>
-        <guid isPermaLink="true">http://c4coffee.ca/ros/2016/03/23/chromeOS-as-a-robotics-platform.html</guid>
+        <link>http://localhost:4000/ros/2016/03/23/chromeOS-as-a-robotics-platform.html</link>
+        <guid isPermaLink="true">http://localhost:4000/ros/2016/03/23/chromeOS-as-a-robotics-platform.html</guid>
         
         
         <category>ROS</category>

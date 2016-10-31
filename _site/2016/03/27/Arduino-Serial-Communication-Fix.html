@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>ChromeOS as a Robotics Platform</title>
-  <meta name="description" content="After purging my old setup for the blog since it was empty and gross, I decide to start the fresh blog with an useful post. After 9 hours of testing and twea...">
+  <title>Arduino Serial Communication Problem and Fix</title>
+  <meta name="description" content="Since the primary work I do is interfacing ROS with microcontrollers for sensor/actuator controls, I would like to share a problem that you may often encount...">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/ros/2016/03/23/chromeOS-as-a-robotics-platform.html">
+  <link rel="canonical" href="http://localhost:4000/2016/03/27/Arduino-Serial-Communication-Fix.html">
   <link rel="alternate" type="application/rss+xml" title="C4Coffee" href="http://localhost:4000/feed.xml">
 </head>
 
@@ -54,19 +54,32 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">ChromeOS as a Robotics Platform</h1>
-    <p class="post-meta"><time datetime="2016-03-23T23:18:42-07:00" itemprop="datePublished">Mar 23, 2016</time></p>
+    <h1 class="post-title" itemprop="name headline">Arduino Serial Communication Problem and Fix</h1>
+    <p class="post-meta"><time datetime="2016-03-27T00:00:00-07:00" itemprop="datePublished">Mar 27, 2016</time></p>
   </header>
   <div class="post-content" itemprop="articleBody">
-    <p>After purging my old setup for the blog since it was empty and gross, I decide to start the fresh blog with an useful post. After 9 hours of testing and tweaking I finally removed chrubuntu from my c720 and installed crouton with xfce::ubuntu14.04 (Which is very important as ROS-indigo does not support 10.2 which is default with crouton)</p>
+    <p>Since the primary work I do is interfacing ROS with microcontrollers for sensor/actuator controls, I would like to share a problem that you may often encounter when doing any time of data transmission.</p>
 
-<p><img src="https://www.dropbox.com/s/kqe8xq0li0e227x/Screenshot%202016-03-23%20at%2011.35.12%20PM.png?raw=1" class="img-thumbnail" /></p>
+<p>Of course there may be more elegant ways of solving this issues if these are even issues. But from what I observed before and after the fixes, my hypothesis for the problems seemed to be solved.</p>
 
-<p>The beauty of this setup however lies in the fact that I can run a suite of tools that are essential for my job on the team to produce software and firmware. This includes being able to build our system under Robotics Operating System(ROS) and arduino code for the firmware side.</p>
+<h1 id="buffer-flushing-for-arduinos">Buffer Flushing for arduinos</h1>
+<p>Problem: When ROS loops are running at a frequency much higher than the arduino can process incoming commands, you may get problems with data in your buffer either holding too much, or not being processed correctly.</p>
 
-<p><img src="https://www.dropbox.com/s/0cl6i39zlq3z8yo/Screenshot%202016-03-23%20at%2011.57.23%20PM.png?raw=1" class="img-thumbnail" /></p>
+<p>Situation: Our method of actuator resolves around sending custom <a href="http://docs.ros.org/api/geometry_msgs/html/msg/Twist.html">twist messages</a> that have the format of: (Lx, Ly, Az). Where Lx/Ly is linear x,y and Az is angular z. What they give us are the motion commands of moving forwards, sideways and turning.</p>
 
-<p>It is midnight so ideally, in the next few days I can put up a few more posts regarding not only setting up ROS on chromeOS but also some jekyll tutorials since there were certain things that took me a while to learn. As I start writing more posts I will also be able to add some more setup screen shots once my c100 gets here for me to abuse.</p>
+<p>When the robot is hooked up to our laptop via USB, we are constantly bombarding the arduino serial port with multiple twist messages a second. I have observed that under certain circumstances, the arduino will either process messages with slight delay to the computed twist messages, or it will competely “hang” and freeze the serial port.</p>
+
+<p>Of course the first solution I thought of was to flush the buffer via <code class="highlighter-rouge">Serial.flush();</code> for the arduino to always process the newest data. However, what I did not know was that the arduino’s flush function under the HardwareSerial.h library was flushing the output buffer not the input buffer, therefore I had to dig around on the internet to see what <a href="https://forum.sparkfun.com/viewtopic.php?f=32&amp;t=32715">others have done to fix this problem.</a></p>
+
+<p>Solution: Adding a function to the HarwareSerial.cpp file in the Arduino library files.</p>
+
+<p>For the .h, add a new function declaration <code class="highlighter-rouge">virtual void flushRX();</code></p>
+
+<p>For the .cpp, add the rest of the function:</p>
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">void</span> <span class="n">HardwareSerial</span><span class="o">::</span><span class="n">flushRX</span><span class="p">(){</span>
+  <span class="n">_rx_buffer</span><span class="o">-&gt;</span><span class="n">head</span> <span class="o">=</span> <span class="n">_rx_buffer</span><span class="o">-&gt;</span><span class="n">tail</span><span class="p">;</span> 
+<span class="p">}</span></code></pre></figure>
 
 
   </div>
@@ -77,7 +90,7 @@
         /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
         var disqus_shortname = 'c4coffee'; // required: replace example with your forum shortname
         // var disqus_developer = 1; // Comment out when the site is live
-        var disqus_identifier = "/ros/2016/03/23/chromeOS-as-a-robotics-platform.html";
+        var disqus_identifier = "/2016/03/27/Arduino-Serial-Communication-Fix.html";
 
         /* * * DON'T EDIT BELOW THIS LINE * * */
         (function() {
