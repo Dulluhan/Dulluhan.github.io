@@ -14,6 +14,9 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://c4coffee.ca" # the base hostname & protocol for your site
 github_username: Dulluhan
 
+gems:
+ - jekyll-sitemap
+
 # Build settings
 markdown: kramdown
   # gem:[archivegenerator, monthly_archive_plugin, category_archive_plugin, sitemap_generator]
