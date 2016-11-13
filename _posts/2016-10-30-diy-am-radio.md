@@ -43,9 +43,13 @@ With the combination of our modulated signal and our carrier signal, we will get
 
 Where the signal above is the signal we are modulating, and the signals below is our same signal after modulation. It can be observed that the original signal centered is now separated into two signals at higher frequencies. This is because, our original signal is now being represented by a signal that oscillates at higher frequencies.
 
+---
 Image sources:
 <ul>
   <li><a href="https://en.wikipedia.org/wiki/File:Amfm3-en-de.gif">Wikepedia: Amplitude Modulation GIF</a></li>
   <li><a href="http://blogs.mathworks.com/steve/2010/05/27/negative-frequencies/">Mathworks Blogs: Steve Eddins on Negative Frequencies</a></li>
   <li><a href="https://en.wikipedia.org/wiki/File:AM_spectrum.svg">Wikipedia: Amplitude Modulation AM Spectrum</a></li>
 </ul>
+
+---
+Part 2 can be found at: [http://c4coffee.ca/2016/11/12/diy-am-radio-part2.html](http://c4coffee.ca/2016/11/12/diy-am-radio-part2.html)
