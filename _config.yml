@@ -20,7 +20,7 @@ gems:
 # Build settings
 markdown: kramdown
   # gem:[archivegenerator, monthly_archive_plugin, category_archive_plugin, sitemap_generator]
-
+highlighter: rogue
 #sitemap settings
 sitemap:file: "../sitemap.xml"
 excerpt_seperator: "<!--more-->"

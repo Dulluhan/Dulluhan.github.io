@@ -5,9 +5,214 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 17 Dec 2016 19:28:27 -0800</pubDate>
-    <lastBuildDate>Sat, 17 Dec 2016 19:28:27 -0800</lastBuildDate>
+    <pubDate>Sat, 17 Dec 2016 20:39:38 -0800</pubDate>
+    <lastBuildDate>Sat, 17 Dec 2016 20:39:38 -0800</lastBuildDate>
     <generator>Jekyll v3.3.0</generator>
+    
+      <item>
+        <title>Tonemapping for HDR</title>
+        <description>&lt;p&gt;In this project I detail the process of preparing and tonemapping a HDR image for viewing via Matlab.&lt;/p&gt;
+
+&lt;p&gt;#Opening HDR Images in Matlab&lt;/p&gt;
+
+&lt;p&gt;The command to open HDR files on Matlab is &lt;a href=&quot;https://www.mathworks.com/help/images/ref/hdrread.html&quot;&gt;&lt;code&gt;hdrread()&lt;/code&gt;.&lt;/a&gt; What you will receive is a [x,y,3] matrix for an image of (x,y) resolution. The three matrices in depth hold the RGB information separately. Since we will have to reuse the information, it’s best that the image file is stored in a handle like such:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;IMG = hdread('img.hdr');&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;extraciting-luminance&quot;&gt;Extraciting Luminance&lt;/h2&gt;
+
+&lt;p&gt;Since tonemapping is applied on luminance, it would make sense to extract the luminance of our image. To do that we will use the relative &lt;a href=&quot;https://en.wikipedia.org/wiki/Relative_luminance&quot;&gt;luminance equation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;lum = 0.213*IMG(:,:,1)+0.715*IMG(:,:,2)+0.072*IMG(:,:,3);&lt;/code&gt;&lt;br /&gt;
+&lt;code&gt;x = log10(lum)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Very important here that &lt;code&gt;log10&lt;/code&gt; is used instead of &lt;code&gt;log&lt;/code&gt;, as the latter computes the natural log that will give you problems.&lt;/p&gt;
+
+&lt;h2 id=&quot;performing-histogram-equalization&quot;&gt;Performing Histogram Equalization&lt;/h2&gt;
+
+&lt;p&gt;The problem of performing histogram equalization on Matlab is that the native image equalization function on Matlab will not work, thus the range of luminace that are dealt with are different. Thus it was necessary to perform manual histogram equalization.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-m&quot; data-lang=&quot;m&quot;&gt;x = x(:)-min(x(:));
+[n,edge]=histcounts(x,index1);
+nk = [0 n];
+rk = edge/(max(edge)-min(edge))*index0; %bins
+pr = nk/sum(nk); %density
+cdf = cumsum(pr)/sum(pr);
+s = round(max(rk)*cdf,0);
+fin = zeros(size(rk)); %equalized histogram luminance values
+for i = 1:index0
+fin(s(i)+1) = fin(s(i)+1)+pr(i);
+end
+fincdf = cumsum(fin)/sum(fin);
+new_lum = zeros(1080,1920);
+lum_index = round(lum,0)+1;
+for i = 1:1080
+   for y = 1:1920
+       new_lum(i,y) = fincdf(lum_index(i,y));
+   end
+end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Where:&lt;br /&gt;
+•	Wmax = max log luminance value &lt;br /&gt;
+•	Wmin = min log luminance value &lt;br /&gt;
+•	Lum = log luminance value scaled between [1,250] so can be used as index &lt;br /&gt;
+•	nk = density &lt;br /&gt;
+•	rk = bins &lt;br /&gt;
+•	pr = percentage density &lt;br /&gt;
+•	cdf = cumulative sum of percentage density of old histogram &lt;br /&gt;
+•	s = converting bins to index values &lt;br /&gt;
+• fin = final equalized histogram&lt;/p&gt;
+
+&lt;h2 id=&quot;applying-linear-ceiling&quot;&gt;Applying Linear Ceiling&lt;/h2&gt;
+
+&lt;p&gt;The next step is to apply a ceiling. The original purpose of this project was to examine the difference between linear ceilings and perceptual ceilings. First this is my approach to a linear ceiling:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-m&quot; data-lang=&quot;m&quot;&gt;fin = fin * 1920 * 1080; %convert percentage to actual number
+tolerance = 2.5/100*sum(fin);
+range = wmax:(wmax-wmin)/index2:wmin;
+trimmings = tolerance+1;
+lw = log10(extract_lum(hdr_img));
+world_lum = 0:(max(lw(:))-min(lw(:)))/index2:max(lw(:))-min(lw(:));
+pbw_max = 1.5;
+pbw_min = 0;
+pbw = pbw_min:(pbw_max-pbw_min)/index2:pbw_max;
+while trimmings &amp;gt; tolerance
+trimmings = 0;
+T = sum(fin); %calculate total sample points
+    if T &amp;gt; tolerance
+        for i = 1:index2
+             ceiling = 1/250*T
+            if fin(i) &amp;gt; ceiling     
+                trimmings = trimmings + fin(i) - ceiling; %trim update
+                fin(i) = ceiling; %reduce ceiling
+            end
+        end
+    else
+        continue;
+    end
+end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;perceptual-ceiling&quot;&gt;Perceptual Ceiling&lt;/h2&gt;
+
+&lt;p&gt;Below is my approach to achieving a perceptual ceiling based on Larson et al. (2011)&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-m&quot; data-lang=&quot;m&quot;&gt;fin = fin * 1920 * 1080; %convert percentage to actual number
+tolerance = 2.5/100*sum(fin);
+range = wmax:(wmax-wmin)/index2:wmin;
+trimmings = tolerance+1;
+lw = log10(extract_lum(hdr_img));
+world_lum = 0:(max(lw(:))-min(lw(:)))/index2:max(lw(:))-min(lw(:));
+pbw_max = 1.5;
+pbw_min = 0;
+pbw = pbw_min:(pbw_max-pbw_min)/index2:pbw_max;
+while trimmings &amp;gt; tolerance
+trimmings = 0;
+T = sum(fin); %calculate total sample points
+    if T &amp;gt; tolerance
+        for i = 1:index2
+             Bde = 2*pbw(i);
+             ld = (Bde)^10;
+             lw = world_lum(i)^10;
+             ld_p = perceptual_ceiling(log10(ld));
+             lw_p = perceptual_ceiling(log10(lw));
+             ceiling = 1/index0*T*lw/ld*ld_p/lw_p;
+            if fin(i) &amp;gt; ceiling     
+                trimmings = trimmings + fin(i) - ceiling; %trim update
+                fin(i) = ceiling; %reduce ceiling
+            end
+        end
+    else
+        continue;
+    end
+end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Here, the pbw max and min values are the target display range in log10 scale with 252 levels corresponding to the number of bins I used. And the look up table used in the code is:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-m&quot; data-lang=&quot;m&quot;&gt;function ceiling = perceptual_ceiling(luminance)
+             switch luminance
+                 case luminance &amp;lt; -3.94
+                     ceiling = -2.86;
+                 case luminance &amp;gt;= -3.94 &amp;amp;&amp;amp; luminance &amp;lt;-1.44
+                     ceiling  = (0.405*luminance+1.6)^2.18-2.86;
+                 case luminance &amp;gt;= -1.44 &amp;amp;&amp;amp; luminance &amp;lt; -0.0184
+                     ceiling = luminance - 0.395;
+                 case luminance &amp;gt;= -0.0184 &amp;amp;&amp;amp; luminance &amp;lt; 1.9
+                     ceiling = (0.249*luminance+0.65)^2.7-0.72;
+                 otherwise
+                     ceiling = luminance - 1.255;
+              end
+end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;conversion-back-into-luminance-space-and-normalization&quot;&gt;Conversion back into luminance Space and Normalization&lt;/h2&gt;
+
+&lt;p&gt;Now that the image has been modified, the image needs to be processed for display. To do so, each pixel is interpolated using the histogram modified in the previous section, then together as a matrix converted out of log space and normalized.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-m&quot; data-lang=&quot;m&quot;&gt;fincdf = cumsum(fin)/sum(fin);
+new_lum = zeros(1080,1920);
+lum_index = round(lum,0)+1;
+for i = 1:1080
+   for y = 1:1920
+       new_lum(i,y) = fincdf(lum_index(i,y));
+   end
+end
+
+new_lum = (new_lum).^10;
+new_lum = (new_lum-(min(new_lum(:))))/(max(new_lum(:))-min(new_lum(:)));&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;replacing-old-luminance-values&quot;&gt;Replacing Old Luminance Values&lt;/h2&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-m&quot; data-lang=&quot;m&quot;&gt;lum = (extract_lum(hdr_img)); %step3
+    for i = 1:1080
+        for y = 1:1920
+           if lum(i,y) &amp;lt; 1
+               lum(i,y) = 1;
+           end
+        end
+    end
+ims = zeros(1080,1920,3);
+figure;
+imshow(new_lum);
+ims(:,:,1) = (hdr_img(:,:,1)./lum).*(new_lum);
+ims(:,:,2) = (hdr_img(:,:,2)./lum).*(new_lum);
+ims(:,:,3) = (hdr_img(:,:,3)./lum).*(new_lum);&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;clipping-and-gamma-correction&quot;&gt;Clipping and Gamma Correction&lt;/h2&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-m&quot; data-lang=&quot;m&quot;&gt;for k = 1:3
+    frame = ims(:,:,k);
+    for i = 1:1080
+        for y = 1:1920
+           if frame(i,y) &amp;gt; 1
+               frame(i,y) = 1;
+           end
+        end
+    end
+    ims(:,:,k) = frame.^(1/2.2);
+end
+figure
+imshow(ims);&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;results&quot;&gt;Results&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/2016-12-17-1.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/img/2016-12-17-2.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/img/2016-12-17-3.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/img/2016-12-17-4.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/img/2016-12-17-5.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/img/2016-12-17-6.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/img/2016-12-17-7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Hopefully when I have more time, I can upload pictures of better quality including the histogram changes through the process as well&lt;/p&gt;
+
+&lt;hr /&gt;
+&lt;p&gt;Project from assignment of partial fulfillment of EECE 421, December 2016.&lt;/p&gt;
+</description>
+        <pubDate>Sat, 12 Nov 2016 00:00:00 -0800</pubDate>
+        <link>http://localhost:4000/2016/11/12/HDR-tonemapping.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/11/12/HDR-tonemapping.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>DIY AM Radio Design - Part2: Circuit Implementation</title>
@@ -324,17 +529,17 @@ All this is based off of my own understanding and experience with ROS, and ROS c
 
 &lt;p&gt;When the robot is hooked up to our laptop via USB, we are constantly bombarding the arduino serial port with multiple twist messages a second. I have observed that under certain circumstances, the arduino will either process messages with slight delay to the computed twist messages, or it will competely “hang” and freeze the serial port.&lt;/p&gt;
 
-&lt;p&gt;Of course the first solution I thought of was to flush the buffer via &lt;code class=&quot;highlighter-rouge&quot;&gt;Serial.flush();&lt;/code&gt; for the arduino to always process the newest data. However, what I did not know was that the arduino’s flush function under the HardwareSerial.h library was flushing the output buffer not the input buffer, therefore I had to dig around on the internet to see what &lt;a href=&quot;https://forum.sparkfun.com/viewtopic.php?f=32&amp;amp;t=32715&quot;&gt;others have done to fix this problem.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Of course the first solution I thought of was to flush the buffer via &lt;code&gt;Serial.flush();&lt;/code&gt; for the arduino to always process the newest data. However, what I did not know was that the arduino’s flush function under the HardwareSerial.h library was flushing the output buffer not the input buffer, therefore I had to dig around on the internet to see what &lt;a href=&quot;https://forum.sparkfun.com/viewtopic.php?f=32&amp;amp;t=32715&quot;&gt;others have done to fix this problem.&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Solution: Adding a function to the HarwareSerial.cpp file in the Arduino library files.&lt;/p&gt;
 
-&lt;p&gt;For the .h, add a new function declaration &lt;code class=&quot;highlighter-rouge&quot;&gt;virtual void flushRX();&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;For the .h, add a new function declaration &lt;code&gt;virtual void flushRX();&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;For the .cpp, add the rest of the function:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HardwareSerial&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flushRX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;_rx_buffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_rx_buffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tail&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;void HardwareSerial::flushRX(){
+  _rx_buffer-&amp;gt;head = _rx_buffer-&amp;gt;tail; 
+}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 </description>
         <pubDate>Sun, 27 Mar 2016 00:00:00 -0700</pubDate>
@@ -373,21 +578,21 @@ All this is based off of my own understanding and experience with ROS, and ROS c
 &lt;p&gt;Xiwi is just X11 in a window. Rather than having to switch between workspaces using the ctrl+shift+alt+F1 “shortcut”, you can just have your chroot (crouton instance) running in a window. The whole concept is just -x forwarding your workplace to the chromOS bash shell.&lt;/p&gt;
 
 &lt;p&gt;To install xiwi you can include the installation of it at the initial setup of your chroot.&lt;br /&gt;
-&lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo sh ~/Downloads/crouton -t xiwi,xfce&lt;/code&gt;&lt;br /&gt;
+&lt;code&gt;$ sudo sh ~/Downloads/crouton -t xiwi,xfce&lt;/code&gt;&lt;br /&gt;
 In the case where you decide to use xubuntu as your chroot distro.&lt;/p&gt;
 
 &lt;p&gt;Alternatively you can upgrade your current chroot. For example, if I was using ubuntu precise, I can update it via: 
-&lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo sh ~/Downloads/crouton -n precise -u -t xiwi&lt;/code&gt;&lt;/p&gt;
+&lt;code&gt;$ sudo sh ~/Downloads/crouton -n precise -u -t xiwi&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;After installation, if you would like to run instances of your chroot you can just -x forward it to xiwi: 
-&lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo distro -X xiwi&lt;/code&gt;  eg. $ sudo startxfce4 -X xiwi&lt;/p&gt;
+&lt;code&gt;$ sudo distro -X xiwi&lt;/code&gt;  eg. $ sudo startxfce4 -X xiwi&lt;/p&gt;
 
 &lt;p&gt;If you just want to run the CLI, you can run: 
-&lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo enter-chroot&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo enter-chroot -n chroot_name&lt;/code&gt;&lt;/p&gt;
+&lt;code&gt;$ sudo enter-chroot&lt;/code&gt; or &lt;code&gt;$ sudo enter-chroot -n chroot_name&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;You can even run specific programs like so: 
-&lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo enter-chroot&lt;/code&gt; followed by &lt;code class=&quot;highlighter-rouge&quot;&gt;$ xiwi -T arduino&lt;/code&gt;(tab) or &lt;code class=&quot;highlighter-rouge&quot;&gt;$ xiwi -F arduino&lt;/code&gt;(window) after you enter your chroot. Further, by adding &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;amp;&lt;/code&gt; to indicate that you want to run the program with the terminal prompt still being available. 
-Forwarded programs can be killed via &lt;code class=&quot;highlighter-rouge&quot;&gt;$ kill&lt;/code&gt; or simply closing the window/tab.&lt;/p&gt;
+&lt;code&gt;$ sudo enter-chroot&lt;/code&gt; followed by &lt;code&gt;$ xiwi -T arduino&lt;/code&gt;(tab) or &lt;code&gt;$ xiwi -F arduino&lt;/code&gt;(window) after you enter your chroot. Further, by adding &lt;code&gt;&amp;amp;&lt;/code&gt; to indicate that you want to run the program with the terminal prompt still being available. 
+Forwarded programs can be killed via &lt;code&gt;$ kill&lt;/code&gt; or simply closing the window/tab.&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -395,9 +600,9 @@ Forwarded programs can be killed via &lt;code class=&quot;highlighter-rouge&quot
 
 &lt;p&gt;One of the only crippling problem that took me a bit to fix was that ROS could would not install on xfce that I had setup on my initial install of crouton. After some research I realized that the version of xubuntu I was running was not supported. It is important to note that I am setting up ROS-indigo for compatibility with my teams’ code&lt;/p&gt;
 
-&lt;p&gt;After reading the &lt;a href=&quot;http://wiki.ros.org/indigo/Installation/Ubuntu&quot;&gt;ROS-indgo’s installation page&lt;/a&gt; I realized that Precise was no longer supported. I therefore had to do an &lt;a href=&quot;https://github.com/dnschneid/crouton/wiki/Upgrade-chroot-release&quot;&gt;OS update to Trusty&lt;/a&gt;. After that a simple installation &lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo apt-get install ros-indigo-desktop-full&lt;/code&gt; was able to set me up.&lt;/p&gt;
+&lt;p&gt;After reading the &lt;a href=&quot;http://wiki.ros.org/indigo/Installation/Ubuntu&quot;&gt;ROS-indgo’s installation page&lt;/a&gt; I realized that Precise was no longer supported. I therefore had to do an &lt;a href=&quot;https://github.com/dnschneid/crouton/wiki/Upgrade-chroot-release&quot;&gt;OS update to Trusty&lt;/a&gt;. After that a simple installation &lt;code&gt;$ sudo apt-get install ros-indigo-desktop-full&lt;/code&gt; was able to set me up.&lt;/p&gt;
 
-&lt;p&gt;Don’t forget to &lt;code class=&quot;highlighter-rouge&quot;&gt;$ source /opt/ros/indigo/setup.bash&lt;/code&gt; or echo it into your .bashrc as I scratched my head over &lt;code class=&quot;highlighter-rouge&quot;&gt;$ roscore&lt;/code&gt; giving me &lt;code class=&quot;highlighter-rouge&quot;&gt;command not found&lt;/code&gt; for the longest time.&lt;/p&gt;
+&lt;p&gt;Don’t forget to &lt;code&gt;$ source /opt/ros/indigo/setup.bash&lt;/code&gt; or echo it into your .bashrc as I scratched my head over &lt;code&gt;$ roscore&lt;/code&gt; giving me &lt;code&gt;command not found&lt;/code&gt; for the longest time.&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -412,7 +617,7 @@ via USB, I was worried that chromebooks would have some security feature that wo
 
 &lt;p&gt;&lt;img src=&quot;https://www.dropbox.com/s/7q1h4ccf8m6zhrs/Screenshot%202016-03-24%20at%2011.14.57%20PM.png?raw=1&quot; class=&quot;img-thumbnail&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Then I also tested program’s abilities to access these ports. Eg. Arduino. A easy blinky test on an uno showed that everything seems to be setup for development. Installing arduino in the chroot, I ran &lt;code class=&quot;highlighter-rouge&quot;&gt;$ sudo xiwi -F arduino&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Then I also tested program’s abilities to access these ports. Eg. Arduino. A easy blinky test on an uno showed that everything seems to be setup for development. Installing arduino in the chroot, I ran &lt;code&gt;$ sudo xiwi -F arduino&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://www.dropbox.com/s/0h1y9ainpfhxeuh/Screenshot%202016-03-25%20at%2012.07.50%20AM.png?raw=1&quot; class=&quot;img-thumbnail&quot; /&gt;&lt;/p&gt;
 

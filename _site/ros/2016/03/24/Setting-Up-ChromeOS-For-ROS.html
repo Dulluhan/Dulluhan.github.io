@@ -76,21 +76,21 @@
 <p>Xiwi is just X11 in a window. Rather than having to switch between workspaces using the ctrl+shift+alt+F1 “shortcut”, you can just have your chroot (crouton instance) running in a window. The whole concept is just -x forwarding your workplace to the chromOS bash shell.</p>
 
 <p>To install xiwi you can include the installation of it at the initial setup of your chroot.<br />
-<code class="highlighter-rouge">$ sudo sh ~/Downloads/crouton -t xiwi,xfce</code><br />
+<code>$ sudo sh ~/Downloads/crouton -t xiwi,xfce</code><br />
 In the case where you decide to use xubuntu as your chroot distro.</p>
 
 <p>Alternatively you can upgrade your current chroot. For example, if I was using ubuntu precise, I can update it via: 
-<code class="highlighter-rouge">$ sudo sh ~/Downloads/crouton -n precise -u -t xiwi</code></p>
+<code>$ sudo sh ~/Downloads/crouton -n precise -u -t xiwi</code></p>
 
 <p>After installation, if you would like to run instances of your chroot you can just -x forward it to xiwi: 
-<code class="highlighter-rouge">$ sudo distro -X xiwi</code>  eg. $ sudo startxfce4 -X xiwi</p>
+<code>$ sudo distro -X xiwi</code>  eg. $ sudo startxfce4 -X xiwi</p>
 
 <p>If you just want to run the CLI, you can run: 
-<code class="highlighter-rouge">$ sudo enter-chroot</code> or <code class="highlighter-rouge">$ sudo enter-chroot -n chroot_name</code></p>
+<code>$ sudo enter-chroot</code> or <code>$ sudo enter-chroot -n chroot_name</code></p>
 
 <p>You can even run specific programs like so: 
-<code class="highlighter-rouge">$ sudo enter-chroot</code> followed by <code class="highlighter-rouge">$ xiwi -T arduino</code>(tab) or <code class="highlighter-rouge">$ xiwi -F arduino</code>(window) after you enter your chroot. Further, by adding <code class="highlighter-rouge">&amp;</code> to indicate that you want to run the program with the terminal prompt still being available. 
-Forwarded programs can be killed via <code class="highlighter-rouge">$ kill</code> or simply closing the window/tab.</p>
+<code>$ sudo enter-chroot</code> followed by <code>$ xiwi -T arduino</code>(tab) or <code>$ xiwi -F arduino</code>(window) after you enter your chroot. Further, by adding <code>&amp;</code> to indicate that you want to run the program with the terminal prompt still being available. 
+Forwarded programs can be killed via <code>$ kill</code> or simply closing the window/tab.</p>
 
 <hr />
 
@@ -98,9 +98,9 @@ Forwarded programs can be killed via <code class="highlighter-rouge">$ kill</cod
 
 <p>One of the only crippling problem that took me a bit to fix was that ROS could would not install on xfce that I had setup on my initial install of crouton. After some research I realized that the version of xubuntu I was running was not supported. It is important to note that I am setting up ROS-indigo for compatibility with my teams’ code</p>
 
-<p>After reading the <a href="http://wiki.ros.org/indigo/Installation/Ubuntu">ROS-indgo’s installation page</a> I realized that Precise was no longer supported. I therefore had to do an <a href="https://github.com/dnschneid/crouton/wiki/Upgrade-chroot-release">OS update to Trusty</a>. After that a simple installation <code class="highlighter-rouge">$ sudo apt-get install ros-indigo-desktop-full</code> was able to set me up.</p>
+<p>After reading the <a href="http://wiki.ros.org/indigo/Installation/Ubuntu">ROS-indgo’s installation page</a> I realized that Precise was no longer supported. I therefore had to do an <a href="https://github.com/dnschneid/crouton/wiki/Upgrade-chroot-release">OS update to Trusty</a>. After that a simple installation <code>$ sudo apt-get install ros-indigo-desktop-full</code> was able to set me up.</p>
 
-<p>Don’t forget to <code class="highlighter-rouge">$ source /opt/ros/indigo/setup.bash</code> or echo it into your .bashrc as I scratched my head over <code class="highlighter-rouge">$ roscore</code> giving me <code class="highlighter-rouge">command not found</code> for the longest time.</p>
+<p>Don’t forget to <code>$ source /opt/ros/indigo/setup.bash</code> or echo it into your .bashrc as I scratched my head over <code>$ roscore</code> giving me <code>command not found</code> for the longest time.</p>
 
 <hr />
 
@@ -115,7 +115,7 @@ via USB, I was worried that chromebooks would have some security feature that wo
 
 <p><img src="https://www.dropbox.com/s/7q1h4ccf8m6zhrs/Screenshot%202016-03-24%20at%2011.14.57%20PM.png?raw=1" class="img-thumbnail" /></p>
 
-<p>Then I also tested program’s abilities to access these ports. Eg. Arduino. A easy blinky test on an uno showed that everything seems to be setup for development. Installing arduino in the chroot, I ran <code class="highlighter-rouge">$ sudo xiwi -F arduino</code></p>
+<p>Then I also tested program’s abilities to access these ports. Eg. Arduino. A easy blinky test on an uno showed that everything seems to be setup for development. Installing arduino in the chroot, I ran <code>$ sudo xiwi -F arduino</code></p>
 
 <p><img src="https://www.dropbox.com/s/0h1y9ainpfhxeuh/Screenshot%202016-03-25%20at%2012.07.50%20AM.png?raw=1" class="img-thumbnail" /></p>
 

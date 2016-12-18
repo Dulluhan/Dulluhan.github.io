@@ -60,17 +60,17 @@
 
 <p>When the robot is hooked up to our laptop via USB, we are constantly bombarding the arduino serial port with multiple twist messages a second. I have observed that under certain circumstances, the arduino will either process messages with slight delay to the computed twist messages, or it will competely “hang” and freeze the serial port.</p>
 
-<p>Of course the first solution I thought of was to flush the buffer via <code class="highlighter-rouge">Serial.flush();</code> for the arduino to always process the newest data. However, what I did not know was that the arduino’s flush function under the HardwareSerial.h library was flushing the output buffer not the input buffer, therefore I had to dig around on the internet to see what <a href="https://forum.sparkfun.com/viewtopic.php?f=32&amp;t=32715">others have done to fix this problem.</a></p>
+<p>Of course the first solution I thought of was to flush the buffer via <code>Serial.flush();</code> for the arduino to always process the newest data. However, what I did not know was that the arduino’s flush function under the HardwareSerial.h library was flushing the output buffer not the input buffer, therefore I had to dig around on the internet to see what <a href="https://forum.sparkfun.com/viewtopic.php?f=32&amp;t=32715">others have done to fix this problem.</a></p>
 
 <p>Solution: Adding a function to the HarwareSerial.cpp file in the Arduino library files.</p>
 
-<p>For the .h, add a new function declaration <code class="highlighter-rouge">virtual void flushRX();</code></p>
+<p>For the .h, add a new function declaration <code>virtual void flushRX();</code></p>
 
 <p>For the .cpp, add the rest of the function:</p>
 
-<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">void</span> <span class="n">HardwareSerial</span><span class="o">::</span><span class="n">flushRX</span><span class="p">(){</span>
-  <span class="n">_rx_buffer</span><span class="o">-&gt;</span><span class="n">head</span> <span class="o">=</span> <span class="n">_rx_buffer</span><span class="o">-&gt;</span><span class="n">tail</span><span class="p">;</span> 
-<span class="p">}</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++">void HardwareSerial::flushRX(){
+  _rx_buffer-&gt;head = _rx_buffer-&gt;tail; 
+}</code></pre></figure>
 
 
   </div>

@@ -21,7 +21,7 @@ layout: default
           {% assign tags = html | split:" " %}
           {% for tag in tags %}
             {% if tag contains 'src' %}
-              <img {{ tag }} />
+              <a href= "{{post.url| prepend: site.baseurl}}"><img {{ tag }} /></a>
             {% endif %}
           {% endfor %}
           {% assign foundImage = 1 %}
