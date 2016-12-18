@@ -9,7 +9,8 @@
 title: C4Coffee
 email: yuanv@alumni.ubc.ca
 description: > # this means to ignore newlines until "baseurl:"
- > Engineer. Robots. Coffee.
+ Engineer. Robots. Coffee.
+ 80/20 Pareto Engineering
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://c4coffee.ca" # the base hostname & protocol for your site
 github_username: Dulluhan
