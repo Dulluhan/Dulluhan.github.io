@@ -6,7 +6,7 @@ catergories: Projects, Electrical
 comments: true
 ---
 
-As part of a project course over the summer, we were tasked to build a self-powered AM radio with easy assembly. The motivations were as follows:
+<p>As part of a project course over the summer, we were tasked to build a self-powered AM radio with easy assembly. The motivations were as follows:
 <ul>
   <li>Easy assembly allows good education material for younger children</li>
   <li>Self-powering allows for use during emergency situations</li>
@@ -14,7 +14,7 @@ As part of a project course over the summer, we were tasked to build a self-powe
   <li>FM radios are slightly more complicated than AM radio</li>
 </ul>
 
-Below are sections extracted from our team's final report.
+Below are sections extracted from our team's final report.</p>
 
 ## Construction Background
 

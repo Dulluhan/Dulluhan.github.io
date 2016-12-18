@@ -6,13 +6,15 @@ catergories: Projects, Electrical
 comments: true
 ---
 
-[http://c4coffee.ca/2016/10/30/diy-am-radio.html](Continuing from the previous post), this post is going to describe the implementation of the actual radio.
+<p><a href="http://c4coffee.ca/2016/10/30/diy-am-radio.html">Continuing from the previous post</a>, this post is going to describe the implementation of the actual radio.</p>
 
 ## Reference Circuits    
 
 ![]({{site.urlt}}/img/2016-11-12.png)
 
-This circuit is an example of a basic crystal radio circuit. <b>L1</b> and <b>C1</b> is the tuning circuit that is a band pass filter. The <b>diode</b> following is the peak detector that allows us to convert the received radio signals to audio.
+This circuit is an example of a basic crystal radio circuit. <b>L1</b> and <b>C1</b> is the tuning circuit that is a band pass filter. The <b>diode</b> following is the peak detector that allows us to convert the received radio signals to audio.   
+
+<!--more-->     
 
 ## Final Circuit Design   
 
