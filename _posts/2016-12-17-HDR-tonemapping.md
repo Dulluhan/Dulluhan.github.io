@@ -7,7 +7,7 @@ comments: true
 ---
 In this project I detail the process of preparing and tonemapping a HDR image for viewing via Matlab.
 
-#Opening HDR Images in Matlab
+## Opening HDR Images in Matlab
 
 The command to open HDR files on Matlab is <a href="https://www.mathworks.com/help/images/ref/hdrread.html">`hdrread()`.</a> What you will receive is a [x,y,3] matrix for an image of (x,y) resolution. The three matrices in depth hold the RGB information separately. Since we will have to reuse the information, it's best that the image file is stored in a handle like such:
 
