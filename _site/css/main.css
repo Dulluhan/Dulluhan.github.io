@@ -531,7 +531,7 @@ a.sidebar-nav-item:focus {
     margin-right: 4rem; } }
 /*
  * Reverse layout
- *
+ * 
  * Flip the orientation of the page by placing the `.sidebar` on the right.
  */
 @media (min-width: 48em) {
