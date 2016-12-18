@@ -4,8 +4,6 @@ layout: default
 
 <div class="home">
 
-  <h1 class="page-heading">Posts</h1>
-
   <ul class="post-list">
     {% for post in site.posts %}
       <li>
@@ -14,6 +12,23 @@ layout: default
           <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
         </h2>
         {{post.excerpt | strip_html | truncatewords: 100}}<a href="{{post.url | prepend: site.baseurl}}">...</a>
+        {% assign foundImage = 0 %}
+{% assign images = post.content | split:"<img " %}
+{% for image in images %}
+  {% if image contains 'src' %}
+
+      {% if foundImage == 0 %}
+          {% assign html = image | split:"/>" | first %}
+          {% assign tags = html | split:" " %}
+          {% for tag in tags %}
+            {% if tag contains 'src' %}
+              <img {{ tag }} />
+            {% endif %}
+          {% endfor %}
+          {% assign foundImage = 1 %}
+      {% endif %}
+  {% endif %}
+{% endfor %}
       </li>
     {% endfor %}
   </ul>
