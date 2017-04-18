@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Tonemapping for HDR"
-date: 2016-11-12
+date: 2016-12-17
 catergories: Projects, Electrical, Signals
 comments: true
 ---

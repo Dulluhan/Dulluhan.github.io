@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "DIY AM Radio Design - Part2: Circuit Implementation"
+title: "DIY Crystal AM Radio Design - Part2: Circuit Implementation"
 date: 2016-11-12
 catergories: Projects, Electrical
 comments: true

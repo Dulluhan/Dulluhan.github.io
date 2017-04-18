@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "DIY AM Radio Design - Part1: Background"
+title: "DIY Crystal AM Radio Design - Part1: Background"
 date: 2016-10-30
 catergories: Projects, Electrical
 comments: true

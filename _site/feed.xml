@@ -5,9 +5,357 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 17 Dec 2016 20:39:38 -0800</pubDate>
-    <lastBuildDate>Sat, 17 Dec 2016 20:39:38 -0800</lastBuildDate>
+    <pubDate>Mon, 17 Apr 2017 21:59:46 -0700</pubDate>
+    <lastBuildDate>Mon, 17 Apr 2017 21:59:46 -0700</lastBuildDate>
     <generator>Jekyll v3.3.0</generator>
+    
+      <item>
+        <title>A Software Template For Arduino Robot Driver</title>
+        <description>&lt;p&gt;For the robots our team designs, we need to not only have support for radio controllers, but also computer controllers (ROS). In most cases we have traditionally always used a Turnigy 9x controller, chosing the spring loaded joystick as our movement controller, and the complementary joystick as the mode selector.&lt;/p&gt;
+
+&lt;p&gt;More specifically we will have the following parameters to abide to when writing the controller:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Forward, Backward and Turning with Neutral Deadzone on Joystick.&lt;/li&gt;
+  &lt;li&gt;Mode selector needs to accomodate: (Wireless e-stop, Autonomous Mode, Manual Mode)&lt;/li&gt;
+  &lt;li&gt;Read radio signals from the Turnigy&lt;/li&gt;
+  &lt;li&gt;Read twist messages from USB Serial&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Next the sections will be divided up in respect to the design parameters we have chosen.&lt;/p&gt;
+
+&lt;h2 id=&quot;setup-and-main-loop&quot;&gt;Setup and Main Loop&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;void setup()&lt;/code&gt; and &lt;code&gt;void loop&lt;/code&gt; are the two fundamental necessary components that are needed in any piece of Arduino Code. Where &lt;code&gt;setup()&lt;/code&gt; is used for declaring objects and opening serial ports, necessary function calls that only need to be done one time, and &lt;code&gt;loop()&lt;/code&gt; is the main loop that will continue to run after the board gets power. Together they are the &lt;code&gt;main&lt;/code&gt; equivalent of normal C/C++ code.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;void setup() {
+  Serial.begin(BAUD_RATE);
+
+  pinMode(2, INPUT);
+  pinMode(3, INPUT);
+  pinMode(4, INPUT);
+  pinMode(5, INPUT);
+
+  LeftM.attach(LEFT_MOTOR_PIN);
+  RightM.attach(RIGHT_MOTOR_PIN);
+
+  // calculate OFFSET
+  set_offset();
+}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;In &lt;code&gt;setup()&lt;/code&gt; the pinmodes are specified. In general there is no need for pullup or pulldown resistors for Arduino circuits as Arduino has 1k built in resistors. However, the modes of the digital pins have to be set here in advance to be ready for input.
+In this particular case, we have done the following:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Set digital pins (d2, d3, d4, d5) to Input mode, necessary for measuring the RF signal from the RC antenna.&lt;/li&gt;
+  &lt;li&gt;“Attached” our motor outputs, which are just abstracted declarations of the motor objects. These objects hold the functions necessary to control the individual output motor controllers. Important to note here that &lt;code&gt;LEFT_MOTOR_PIN&lt;/code&gt; and &lt;code&gt;LEFT_MOTOR_PIN&lt;/code&gt; are to be declared different to the input pins (d2, d3, d4, d5) and specifically chosen from one of the pins that support PWM output. Pins that support PWM are noted by a “~” on the board. It is also general practice that symmetrical systems are wired up in pairs. ie. For our system with 2 motors we will chose either [d3,d5], [d6, d9] or [d10, d11] as these 3 pairs are all of different clock zones.&lt;/li&gt;
+  &lt;li&gt;Function set_offset is called. This is to initialize the sensor values to neutral, in other words we are zeroing the sensors. In our particular case, we are setting the neutral frequency we want as the center of the deadzone. The iplementation will be discussed in detail underneath&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;void loop() {
+  rc_read();
+  if (Mode == 1) { //Autonomous
+    serial_read();
+    convert();
+    drive(linear_x, angular_z);
+  }
+  else if (Mode == 0) {//RC Mode
+    linear_x = range1;
+    angular_z = range2;
+
+    convert();
+    drive(linear_x, angular_z);
+  }
+  else {
+    linear_x = UNMAPPED_STOP_SPEED;
+    angular_z = UNMAPPED_STOP_SPEED;
+
+    convert();
+    drive(linear_x, angular_z);
+  }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;In the main loop, we are constantly checking the mode of the system set by the remote control through &lt;code&gt;rc_read()&lt;/code&gt;. There are 3 modes as discussed earlier:&lt;/p&gt;
+&lt;h4 id=&quot;mode-1-autonomous-mode&quot;&gt;Mode 1: Autonomous Mode&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;Read the command sent to the Arduino via USB&lt;/li&gt;
+  &lt;li&gt;Convert the commands to the appropriate range. This includes any speed clamping necessary for safety and competition rules.&lt;/li&gt;
+  &lt;li&gt;Send scaled output to motor controlling function
+    &lt;h4 id=&quot;mode-0-rc-mode&quot;&gt;Mode 0: RC Mode&lt;/h4&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Read the input from radio for driving&lt;/li&gt;
+  &lt;li&gt;Convert the commands to the appropriate range.&lt;/li&gt;
+  &lt;li&gt;Send scaled output to motor controlling function
+    &lt;h4 id=&quot;mode-default-e-stop&quot;&gt;Mode Default: E-stop&lt;/h4&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Set everything to 0&lt;/li&gt;
+  &lt;li&gt;Scale the commands to appropriate range. In this case it would be 90 for &lt;code&gt;servo.write()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Send scaled outptu to motor controlling function&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;read-radio-signal&quot;&gt;Read Radio Signal&lt;/h2&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;void set_offset() {
+  delay(100);
+  int linear_x_mid = pulseIn(2,HIGH); //RX standard - radio signal midpoint
+  int angular_z_mid = pulseIn(3,HIGH); //RY standard - radio signal midpoint
+
+  // JOYSTICK_MARGIN is an error margin for joystick control
+  // e.g. if the joystick is moved just a little bit, it is assumed that no movement
+  // is desired.
+  linearXHigh = linear_x_mid + JOYSTICK_MARGIN;
+  linearXLow = linear_x_mid - JOYSTICK_MARGIN;
+
+  angularZHigh = angular_z_mid + JOYSTICK_MARGIN;
+  angularZLow = angular_z_mid - JOYSTICK_MARGIN;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;code&gt;void set_offset()&lt;/code&gt; is necessary as the system’s (RC receiver’s) frequency is not necessarily constant. It can easily change due to interference, change in receiver or even different microcontroller. Therefore, every time we startup the system, we will measure the frequency reading when the remote control is in neutral position. This will allow us to scale the deadband accordingly.&lt;/p&gt;
+
+&lt;p&gt;Generally the only thing that changes is the center frequency of specific channels. Therefore there is technically no “scaling” done, only translations of the range.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;void rc_read() {
+  range1 = pulseIn(2, HIGH); // Forward/Backward
+  range2 = pulseIn(3, HIGH); // Turn
+  range3 = pulseIn(4, HIGH); // Mode
+
+  if (range1 &amp;lt; linearXHigh &amp;amp;&amp;amp; range1 &amp;gt; linearXLow)
+    range1 = UNMAPPED_STOP_SPEED;
+  else
+    range1 = map (range1, 949, 1700, 0, 255);
+
+  if (range2 &amp;lt; angularZHigh &amp;amp;&amp;amp; range2 &amp;gt; angularZLow)
+    range2 = UNMAPPED_STOP_SPEED;
+  else
+    range2 = map (range2, 949, 1700, 0, 255);
+
+  if (range3 &amp;lt; 1200)
+    Mode = -1; // STOP mode
+  else if (1200 &amp;lt;= range3 &amp;amp;&amp;amp; range3 &amp;lt; 1600)
+    Mode = 0; // RC mode
+  else if (1600 &amp;lt;= range3 &amp;amp;&amp;amp; range3 &amp;lt; 2000)
+    Mode = 1; //auto mode
+  else
+    Mode = -2; // STOP mode
+
+  if (abs(range1 - 90) &amp;lt; TRIM)
+    range1 = UNMAPPED_STOP_SPEED;
+  if (abs(range2 - 90) &amp;lt; TRIM)
+    range2 = UNMAPPED_STOP_SPEED;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The first thing done in &lt;code&gt;rc_read()&lt;/code&gt; is to measure the frequency received from the individual channels. The Arduino does this by comparing it’s own clock pulses to the input pulses, a process abstracted in &lt;code&gt;pulseIN()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Next we map the frequencies read for the 3 individual channels (range1, range2, range3) to our desired range. For range1 and range2 it is in the range [0,255] because that is the range specified for twist messages, to make the conversion easier, we have decided that the &lt;code&gt;convert()&lt;/code&gt; function should only have to deal with one specified range for simplicity.&lt;/p&gt;
+
+&lt;p&gt;For range3, the desired range would be to split the frequency spectrum into 3 sets. However the code above is probably not the optimal implementation. The optimal implmentation would look more like:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;if (abs(range3-mode_mid) &amp;lt; deadband)
+  Mode = 0;
+else if (mode_min &amp;lt; range3 &amp;lt; deadband+mode_mid)
+  Mode = 1;
+else
+  Mode = -1&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Where Mode 0 is autonomous mode, Mode 1 is RC mode, and Mode -1 is E-stop mode. This will ensure that anything outside of the range [mode_min, mode_mid+deadband] is E-stop so the robot does not move. This should be considered a necessary safety feature so that any spikes in the transceiver frequency will not make the robot move. (This commonly happens when you turn the remote on and off).&lt;/p&gt;
+&lt;h2 id=&quot;read-twist-messages&quot;&gt;Read Twist Messages&lt;/h2&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;void serial_read(){
+  if (Serial.available() &amp;gt; BUFFER_SIZE) {
+      if (Serial.read() == BUFFER_HEAD) {
+          linear_x = Serial.read();
+          linear_y = Serial.read();
+          linear_z = Serial.read();
+          angular_x = Serial.read();
+          angular_y = Serial.read();
+          angular_z = Serial.read();
+      } else {
+          linear_x = angular_z = UNMAPPED_STOP_SPEED;
+      }
+
+  } else {
+      linear_x = angular_z = UNMAPPED_STOP_SPEED;
+    }
+}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Reading of the twist message is straightforward. &lt;code&gt;Serial.read()&lt;/code&gt; reads exactly one byte from the serial queue. Like most read functions it will pop the byte of the queue read, so be careful when handling. In the specific case of our function &lt;code&gt;serial_read()&lt;/code&gt; the following steps are performed:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code&gt;Serial.available()&lt;/code&gt; returns the number of available bytes. The if statement on line 2 will check and confirm that we have received a full set of twist messages before proceeding.&lt;/li&gt;
+  &lt;li&gt;The first byte on the serial input queue is checked to see if it holds to the symbol chosen as the message head&lt;/li&gt;
+  &lt;li&gt;The individual bytes of (linear x,y,z and angular x,y,z) are received via &lt;code&gt;Serial.read()&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;In any case where the initial byte is not the message head, or if the full twist message has not arrived, all values will just be set to neutral.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;A twist message is specified in the form: &lt;code&gt;'B',int,int,int,int,int,int&lt;/code&gt;, where &lt;code&gt;'B'&lt;/code&gt; is just a char to indicate the beginning of the message, and following ‘B’ would be a chain of 6 one byte ints that correspond to the linear x,y,z and angular x,y,z values. So an example received message would look like: &lt;code&gt;B12818212812812890&lt;/code&gt;. This would indicate that the computer is asking the robot to move in the linear_y direction (forward for robot) and turn to the left. “128” would be considered neutral as it is the center of the range [0,255], a 1 byte int.&lt;/p&gt;
+
+&lt;h2 id=&quot;drive-functions&quot;&gt;Drive Functions&lt;/h2&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;void convert() {
+
+  if (linear_x &amp;gt; 255)
+    linear_x = 255;
+  else if (linear_x &amp;lt; 0)
+    linear_x = 0;
+
+  if (angular_z &amp;gt; 255)
+    angular_z = 255;
+  else if (angular_z &amp;lt; 0)
+    angular_z = 0;
+
+  linear_x = map(linear_x, 0, 255, LINEAR_MIN, LINEAR_MAX);
+  angular_z = map(angular_z, 0, 255, ANGULAR_MIN, ANGULAR_MAX);
+}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;code&gt;void convert()&lt;/code&gt; takes the 1 byte ints and converts them to the domain required for function &lt;code&gt;servo.write()&lt;/code&gt; that may be used in&lt;code&gt;servo_write()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;void drive(int linear_speed, int angular_speed){
+  int left_throttle = linear_speed + (angular_speed - ANGULAR_STOP);
+  int right_throttle = linear_speed - (angular_speed - ANGULAR_STOP);
+
+  servo_write(LeftM, left_throttle);
+  servo_write(RightM, right_throttle);
+}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The &lt;code&gt;drive()&lt;/code&gt; function combines the angular and linear commands into the respective left wheel throttle and right wheel throttle needed to carry out the action.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;void servo_write(Servo motor, int throttle) {
+  throttle = map(throttle, 70, 110, 1000, 2000);
+  motor.writeMicroseconds(throttle);
+}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The &lt;code&gt;servo_write()&lt;/code&gt; can be implemented in two ways. One is to directly write the duty cycle as demonstrated in the code above. The other is to utilize the existing &lt;code&gt;servo.write()&lt;/code&gt; function built into the standard Arduino libraries. The direct method is chosen in this case because of our ESC’s duty cycle not matching the output of &lt;code&gt;servo.write()&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;setup&quot;&gt;Setup&lt;/h2&gt;
+&lt;p&gt;The library files needed are the following:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;#include &amp;lt;SoftwareSerial.h&amp;gt;
+#include &amp;lt;stdlib.h&amp;gt;
+#include &amp;lt;Servo.h&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Constants to define:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;#define TRIM 8
+
+#define BAUD_RATE 9600
+
+#define BUFFER_SIZE 6
+
+#define UNMAPPED_STOP_SPEED 128
+#define OFFSET 1
+#define JOYSTICK_MARGIN 50
+#define RIGHT_MOTOR_PIN 10
+#define LEFT_MOTOR_PIN 11
+#define BUFFER_HEAD B
+
+#define LINEAR_MAX 100
+#define LINEAR_MIN 80
+#define LINEAR_STOP 90
+
+#define ANGULAR_MAX 100
+#define ANGULAR_MIN 80
+#define ANGULAR_STOP 90&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Variable Declarations:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;int linear_x = 0;
+int linear_y = 0;
+int linear_z = 0;
+int angular_x = 0;
+int angular_y = 0;
+int angular_z = 0;
+
+Servo LeftM;
+Servo RightM;
+
+int range1 = 0, range2 = 0, range3 = 0, B2 = 0, B4 = 0, Mode = 0;
+
+int linearXHigh = 0, linearXLow = 0, angularZHigh = 0, angularZLow = 0;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+</description>
+        <pubDate>Mon, 17 Apr 2017 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/2017/04/17/Arduino-Driver.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/04/17/Arduino-Driver.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>A System Template For Rapid Prototyping Robots</title>
+        <description>&lt;p&gt;The motivation for this post is to provide a very simple template of “nodes” that I always use for projects. After going through various competitions and projects, I realized that all robotic projects can be built off the same model. A core set of function blocks that allow for fast hardware testing and flexibility to expand in software.&lt;/p&gt;
+
+&lt;p&gt;Overall I think the following functions are always necessary:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Input parsing. May it be from a computer or a radio controller, there robot generally has some sort of way to interact with humans.&lt;/li&gt;
+  &lt;li&gt;Output. Generally in the form of a PWM signal for motor controllers.&lt;/li&gt;
+  &lt;li&gt;IO Mapping And Scaling. Depending on the system, you may want your radio signal to map directly to the throttle of your robot, or you may want specific inputs mapped to specific sets of behavior.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;system-hierarchy&quot;&gt;System Hierarchy&lt;/h2&gt;
+
+&lt;p&gt;Though Arduinos are generally considered the “brains” of the robot, in more complex systems they are more suitable for an adapter between the high level complex computer and the low level circuit. In most cases a computer would send a command via USB to an Arduino (or some microcontroller) that further controls an ESC (Electronic Speed Controller) or H-bridge circuit that provides power to the motor.
+Overall the Arduino is in charge of the following tasks:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Collecting sensor data&lt;/li&gt;
+  &lt;li&gt;Sending sensor data to a higher level system for processing&lt;/li&gt;
+  &lt;li&gt;Sending control signals to the motor controllers&lt;/li&gt;
+  &lt;li&gt;Receiving control signal (Analog and Digital)&lt;/li&gt;
+  &lt;li&gt;In some cases error check and correct its movement based on sensor data&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;This post will focus on the microcontroller’s (Arduino) role in the system in respect to the necessary functions stated in the beginning.&lt;/p&gt;
+
+&lt;h2 id=&quot;input-parsing-on-microcontroller&quot;&gt;Input Parsing on Microcontroller&lt;/h2&gt;
+
+&lt;p&gt;The main inputs for the microcontroller can be both analog or digital. Analog in the case of radio/sensor signals, and digital in the case of any form of serial communication.&lt;/p&gt;
+
+&lt;p&gt;In the case of analog signals, the Arduino has a very convenient command &lt;a href=&quot;https://www.arduino.cc/en/Reference/pulseIn&quot;&gt;&lt;code&gt;pulseIn&lt;/code&gt;&lt;/a&gt; that can help you with RF signals. It’s important to note that even though RF signal are analog, due to the nature of how Arduino reads the signal, the input has to be connected to digital pins on the Arduino. My suggestion is to chose pins that do not explicitly support PWM so you won’t have to shuffle pins around in the future.&lt;/p&gt;
+
+&lt;p&gt;For sensor signals that you are collecting, check first that the sensor you are using is not using a form of serial communication. Some examples would be the &lt;a href=&quot;https://www.adafruit.com/product/746&quot;&gt;Adafruit Breakout GPS&lt;/a&gt; that uses serial communication with the Arduino. (This can be easily recognized by the TX/RX pins on the sensor board). In the case of an accelerometer like the &lt;a href=&quot;https://www.adafruit.com/product/163&quot;&gt;ADXL335&lt;/a&gt; sold by Adafruit, the inputs to your system would need to be connected to the analog pins on your Arduino. After the wiring is done, all you have to do is call the &lt;a href=&quot;https://www.arduino.cc/en/Reference/AnalogRead&quot;&gt;&lt;code&gt;analogRead&lt;/code&gt;&lt;/a&gt; function under Arduino’s standard library.&lt;/p&gt;
+
+&lt;p&gt;For digital signals, &lt;a href=&quot;https://www.arduino.cc/en/Serial/read&quot;&gt;&lt;code&gt;Serial.read&lt;/code&gt;&lt;/a&gt; is the function you would want to use to collect data. Here are some things to be careful about:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Every time you call the &lt;code&gt;Serial.read&lt;/code&gt; command or &lt;code&gt;Serial.available&lt;/code&gt; command, a byte in the input queue is popped. Therefore, be very careful when reading so you don’t lose data.&lt;/li&gt;
+  &lt;li&gt;If you are getting random values that you are not expecting check that &lt;code&gt;Serial.begin&lt;/code&gt; is initiated with the correct baud rate.&lt;/li&gt;
+  &lt;li&gt;The &lt;code&gt;Serial.read&lt;/code&gt; function returns an int, if you would like any other format, you would have to perform the conversion yourself.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;output-on-microcontroller&quot;&gt;Output on microcontroller&lt;/h2&gt;
+
+&lt;p&gt;The two main outputs the microcontroller for this particular system would be the output to the motor controllers and the output to the computer via USB.&lt;/p&gt;
+
+&lt;p&gt;For output to the motor controllers, there are a few methods, however the simplest method is to use the &lt;a href=&quot;https://www.arduino.cc/en/Reference/ServoWrite&quot;&gt;&lt;code&gt;servo.write&lt;/code&gt;&lt;/a&gt; command that converts an int into a pwm signal. The parameter you would want to give &lt;code&gt;servo.write&lt;/code&gt; would be a value between 0-180 with 90 being neutral. Important things to note:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;In any case where you are not getting the desired output from your motor, double check that the controller you are using has the same duty cycle as your esc.&lt;/li&gt;
+  &lt;li&gt;If you are driving a 3 pin servo, 90 would correspond to the arm standing up right. However if you are driving a motor controller, 90 corresponds to 0 throttle.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;USB Serial has also been made easy by &lt;a href=&quot;https://www.arduino.cc/en/Serial/write&quot;&gt;&lt;code&gt;Serial.write&lt;/code&gt;&lt;/a&gt;. This would be used in the case where you are using the microcontroller as a data collecting adapter to the computer. It is also a very useful function to check if you are sending the correct messages from you Arduino to your computer.&lt;/p&gt;
+
+&lt;h2 id=&quot;io-mapping-and-scaling&quot;&gt;IO Mapping and Scaling&lt;/h2&gt;
+
+&lt;p&gt;In most cases your signals generally don’t match up between the input to the output when passing through the Arduino. Examples:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;A radio signal would be in frequency provided by &lt;code&gt;pulseIn&lt;/code&gt;, however the virtual output of the system would have to be an int between 0-180 for &lt;code&gt;servo.write&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;A turn knob is a potentiometer that would be giving you analog signals.
+For all the cases here some sort of scaling or logic would have to be implemented.
+Traditionally we would write some long if statement to parse our data and convert it, however Arduino has the &lt;a href=&quot;https://www.arduino.cc/en/reference/map&quot;&gt;&lt;code&gt;map&lt;/code&gt;&lt;/a&gt; function that does everything for you.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;code-recommendation&quot;&gt;Code Recommendation&lt;/h2&gt;
+
+&lt;p&gt;The general format of your Arduino code would be recommended to include the following:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;code&gt;void setup()&lt;/code&gt; is one of 2 necessary pieces of code for the Arduino. Most of the function declarations would be done in here.&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;void loop()&lt;/code&gt; is the other necessary function needed. It can be thought of as the equivalent of &lt;code&gt;main&lt;/code&gt; in C. The suggestion is to first decide the functions that the Arduino has to carry out and write them as separate functions called in &lt;code&gt;loop&lt;/code&gt;.   &lt;br /&gt;
+ i. Main logic can be done here, if there are any cases where special functions have to be preformed or overridden, it is a good choice to put it here because it is the highest level loop you can have in an Arduino system. &lt;br /&gt;
+ ii. &lt;code&gt;Input function&lt;/code&gt;. Since in most cases you would be taking in some sort of command, this is a good function to have nested in the loop. But because you would want to write the mapping and scaling as well, it would be wise to separate it from &lt;code&gt;loop&lt;/code&gt; to avoid convoluting your code. &lt;br /&gt;
+ iii. &lt;code&gt;Ouput function&lt;/code&gt;. Best also nested within loop since this will be done constantly as long as your robot is running.&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Mon, 19 Dec 2016 00:00:00 -0800</pubDate>
+        <link>http://localhost:4000/2016/12/19/A-Simple-Arduino-Robot.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/12/19/A-Simple-Arduino-Robot.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Tonemapping for HDR</title>
@@ -207,15 +555,15 @@ imshow(ims);&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;hr /&gt;
 &lt;p&gt;Project from assignment of partial fulfillment of EECE 421, December 2016.&lt;/p&gt;
 </description>
-        <pubDate>Sat, 12 Nov 2016 00:00:00 -0800</pubDate>
-        <link>http://localhost:4000/2016/11/12/HDR-tonemapping.html</link>
-        <guid isPermaLink="true">http://localhost:4000/2016/11/12/HDR-tonemapping.html</guid>
+        <pubDate>Sat, 17 Dec 2016 00:00:00 -0800</pubDate>
+        <link>http://localhost:4000/2016/12/17/HDR-tonemapping.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2016/12/17/HDR-tonemapping.html</guid>
         
         
       </item>
     
       <item>
-        <title>DIY AM Radio Design - Part2: Circuit Implementation</title>
+        <title>DIY Crystal AM Radio Design - Part2: Circuit Implementation</title>
         <description>&lt;p&gt;&lt;a href=&quot;http://c4coffee.ca/2016/10/30/diy-am-radio.html&quot;&gt;Continuing from the previous post&lt;/a&gt;, this post is going to describe the implementation of the actual radio.&lt;/p&gt;
 
 &lt;h2 id=&quot;reference-circuits&quot;&gt;Reference Circuits&lt;/h2&gt;
@@ -406,7 +754,7 @@ At this point we were satisfied with the circuit’s performance using a crystal
       </item>
     
       <item>
-        <title>DIY AM Radio Design - Part1: Background</title>
+        <title>DIY Crystal AM Radio Design - Part1: Background</title>
         <description>&lt;p&gt;As part of a project course over the summer, we were tasked to build a self-powered AM radio with easy assembly. The motivations were as follows:
 &lt;ul&gt;
   &lt;li&gt;Easy assembly allows good education material for younger children&lt;/li&gt;
