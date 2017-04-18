@@ -67,17 +67,19 @@ void loop() {
 
 In the main loop, we are constantly checking the mode of the system set by the remote control through `rc_read()`. There are 3 modes as discussed earlier:
 #### Mode 1: Autonomous Mode
-1. Read the command sent to the Arduino via USB
+1. Read the command sent to the Arduino via USB.
 2. Convert the commands to the appropriate range. This includes any speed clamping necessary for safety and competition rules.
-3. Send scaled output to motor controlling function
+3. Send scaled output to motor controlling function.
+
 #### Mode 0: RC Mode
-1. Read the input from radio for driving
+1. Read the input from radio for driving.
 2. Convert the commands to the appropriate range.
-3. Send scaled output to motor controlling function
+3. Send scaled output to motor controlling function.
+     
 #### Mode Default: E-stop
-1. Set everything to 0
-2. Scale the commands to appropriate range. In this case it would be 90 for `servo.write()`
-3. Send scaled outptu to motor controlling function
+1. Set everything to 0.
+2. Scale the commands to appropriate range. In this case it would be 90 for `servo.write()`.
+3. Send scaled output to motor controlling function.
 
 
 ## Read Radio Signal
