@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "A System Template For Rapid Prototyping Robots"
+title: "20: Template For Arduino Robot Driver"
 date: 2016-12-19
 catergories: Projects, Electrical, Signals
 comments: true

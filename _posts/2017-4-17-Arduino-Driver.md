@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "A Software Template For Arduino Robot Driver"
+title: "80: Template For Arduino Robot Driver"
 date: 2017-4-17
 catergories: Projects, Electrical, Signals, Arduino
 comments: true
@@ -75,7 +75,7 @@ In the main loop, we are constantly checking the mode of the system set by the r
 1. Read the input from radio for driving.
 2. Convert the commands to the appropriate range.
 3. Send scaled output to motor controlling function.
-     
+
 #### Mode Default: E-stop
 1. Set everything to 0.
 2. Scale the commands to appropriate range. In this case it would be 90 for `servo.write()`.
