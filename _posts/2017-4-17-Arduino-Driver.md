@@ -5,7 +5,7 @@ date: 2017-4-17
 catergories: Projects, Electrical, Signals, Arduino
 comments: true
 ---
-
+Refer to [previous post](http://c4coffee.ca/2016/12/19/A-Simple-Arduino-Robot.html) for a general overview.
 For the robots our team designs, we need to not only have support for radio controllers, but also computer controllers (ROS). In most cases we have traditionally always used a Turnigy 9x controller, chosing the spring loaded joystick as our movement controller, and the complementary joystick as the mode selector.
 
 More specifically we will have the following parameters to abide to when writing the controller:
