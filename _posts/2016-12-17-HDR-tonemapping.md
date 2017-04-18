@@ -1,12 +1,7 @@
 ---
 layout: post
-<<<<<<< HEAD
-title: "Tonemapping for HDR"
-date: 2016-12-17
-=======
 title: "Tonemapping for HDR Images in Matlab"
 date: 2016-11-12
->>>>>>> 1e5e5844e12594e2c6fd91b9f67aff48dee47033
 catergories: Projects, Electrical, Signals
 comments: true
 ---
