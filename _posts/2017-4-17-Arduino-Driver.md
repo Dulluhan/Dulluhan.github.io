@@ -255,3 +255,7 @@ int range1 = 0, range2 = 0, range3 = 0, B2 = 0, B4 = 0, Mode = 0;
 
 int linearXHigh = 0, linearXLow = 0, angularZHigh = 0, angularZLow = 0;
 {% endhighlight %}
+
+---
+Code can be found at our [team Github](https://github.com/UBC-Snowbots/IGVC-2017/tree/master/src/firmware/firmware_control)
+Authors of code: Vincent, Nick, James
