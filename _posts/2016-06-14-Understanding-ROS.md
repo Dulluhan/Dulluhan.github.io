@@ -2,7 +2,7 @@
 layout: post
 title: "Understanding ROS"
 date: 2016-06-14
-catergories: ROS
+tags: ROS
 comments: true
 ---
 <p> Recently I've been reached out via email, A2A about the function of ROS. For people who are new to ROS, it is hard to grasp what ROS is and why we need it. Below is a copy of the question, link to the question, and my answer. </p>

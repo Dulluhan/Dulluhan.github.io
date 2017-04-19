@@ -2,7 +2,7 @@
 layout: post
 title:  "ChromeOS as a Robotics Platform"
 date:   2016-03-23 23:18:42 -0700
-categories: ROS
+tags: ROS
 comments: true
 ---
 
@@ -14,5 +14,4 @@ The beauty of this setup however lies in the fact that I can run a suite of tool
 
 <img src="https://www.dropbox.com/s/0cl6i39zlq3z8yo/Screenshot%202016-03-23%20at%2011.57.23%20PM.png?raw=1" class="img-thumbnail">
 
-It is midnight so ideally, in the next few days I can put up a few more posts regarding not only setting up ROS on chromeOS but also some jekyll tutorials since there were certain things that took me a while to learn. As I start writing more posts I will also be able to add some more setup screen shots once my c100 gets here for me to abuse. 
-
+It is midnight so ideally, in the next few days I can put up a few more posts regarding not only setting up ROS on chromeOS but also some jekyll tutorials since there were certain things that took me a while to learn. As I start writing more posts I will also be able to add some more setup screen shots once my c100 gets here for me to abuse.

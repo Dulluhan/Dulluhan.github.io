@@ -2,7 +2,7 @@
 layout: post
 title: "Template For Arduino Robot Driver: 20"
 date: 2016-12-19
-catergories: Projects, Electrical, Signals
+tags: Projects ROS Arduino Robotics
 comments: true
 ---
 

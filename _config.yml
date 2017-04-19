@@ -16,6 +16,8 @@ github_username: Dulluhan
 
 gems:
  - jekyll-sitemap
+ - jekyll-redirect-from
+ - jekyll-seo-tag
 
 # Build settings
 markdown: kramdown

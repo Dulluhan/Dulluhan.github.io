@@ -6,16 +6,15 @@ layout: default
   <header class="post-header">
     <h1 class="post-title" itemprop="name headline">{{ page.title }}</h1>
     <p class="post-meta">{% if page.author %} • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ page.author }}</span></span>{% endif %}</p>
+    <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time>
   </header>
   <div class="post-content" itemprop="articleBody">
     {{ content }}
   </div>
-  <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time>
-<hr>
+  <hr>
 <br>
-<h1> Related Posts </h1>
-{% assign RELATED_POSTS_THRESHOLD = 5 %}
-
+<h2> Related Posts </h2>
+{% assign RELATED_POSTS_THRESHOLD = 3 %}
 <ul>
   {% assign related_post_count = 0 %}
   {% for post in site.related_posts %}
@@ -28,7 +27,6 @@ layout: default
           <h3>
             <a href="{{ site.baseurl }}{{ post.url }}">
               {{ post.title }}
-              <small>{{ post.date | date_to_string }}</small>
             </a>
           </h3>
         </li>
@@ -58,7 +56,6 @@ layout: default
           <h3>
             <a href="{{ site.baseurl }}{{ post.url }}">
               {{ post.title }}
-              <small>{{ post.date | date_to_string }}</small>
             </a>
           </h3>
         </li>
