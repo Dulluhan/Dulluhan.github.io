@@ -13,11 +13,13 @@ email: yuanv@alumni.ubc.ca
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://c4coffee.ca" # the base hostname & protocol for your site
 github_username: Dulluhan
+linkedin_username: vincentyuan
 
 gems:
  - jekyll-sitemap
  - jekyll-redirect-from
  - jekyll-seo-tag
+ - jekyll-feed
 
 # Build settings
 markdown: kramdown

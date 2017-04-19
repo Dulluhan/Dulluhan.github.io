@@ -7,9 +7,9 @@ layout: default
   <ul class="post-list">
     {% for post in site.posts %}
       <li>
-        <h2>
+        <h1>
           <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-        </h2>
+        </h1>
         {{post.excerpt | strip_html | truncatewords: 100}}<a href="{{post.url | prepend: site.baseurl}}">...</a>
         {% assign foundImage = 0 %}
 {% assign images = post.content | split:"<img " %}
@@ -31,7 +31,5 @@ layout: default
       </li>
     {% endfor %}
   </ul>
-
-  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
 
 </div>
