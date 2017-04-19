@@ -1,16 +1,17 @@
 ---
 layout: post
-title: "80: Template For Arduino Robot Driver"
+title: "Template For Arduino Robot Driver: 80"
 date: 2017-4-17
 catergories: Projects, Electrical, Signals, Arduino
 comments: true
 ---
 Refer to [previous post](http://c4coffee.ca/2016/12/19/A-Simple-Arduino-Robot.html) for a general overview.
+
 For the robots our team designs, we need to not only have support for radio controllers, but also computer controllers (ROS). In most cases we have traditionally always used a Turnigy 9x controller, chosing the spring loaded joystick as our movement controller, and the complementary joystick as the mode selector.
 
 More specifically we will have the following parameters to abide to when writing the controller:
 1. Forward, Backward and Turning with Neutral Deadzone on Joystick.
-2. Mode selector needs to accomodate: (Wireless e-stop, Autonomous Mode, Manual Mode)
+2. Mode selector needs to accommodate: (Wireless e-stop, Autonomous Mode, Manual Mode)
 3. Read radio signals from the Turnigy
 4. Read twist messages from USB Serial
 
@@ -38,7 +39,7 @@ In `setup()` the pinmodes are specified. In general there is no need for pullup 
 In this particular case, we have done the following:
 1. Set digital pins (d2, d3, d4, d5) to Input mode, necessary for measuring the RF signal from the RC antenna.
 2. "Attached" our motor outputs, which are just abstracted declarations of the motor objects. These objects hold the functions necessary to control the individual output motor controllers. Important to note here that `LEFT_MOTOR_PIN` and `LEFT_MOTOR_PIN` are to be declared different to the input pins (d2, d3, d4, d5) and specifically chosen from one of the pins that support PWM output. Pins that support PWM are noted by a "~" on the board. It is also general practice that symmetrical systems are wired up in pairs. ie. For our system with 2 motors we will chose either [d3,d5], [d6, d9] or [d10, d11] as these 3 pairs are all of different clock zones.
-3. Function set_offset is called. This is to initialize the sensor values to neutral, in other words we are zeroing the sensors. In our particular case, we are setting the neutral frequency we want as the center of the deadzone. The iplementation will be discussed in detail underneath
+3. Function `set_offset()` is called. This is to initialize the sensor values to neutral, in other words we are zeroing the sensors. In our particular case, we are setting the neutral frequency we want as the center of the deadzone. The iplementation will be discussed in detail underneath
 
 {% highlight C linenos %}
 void loop() {
