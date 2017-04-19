@@ -85,5 +85,7 @@ If you are unsure about the wiring follow these rules to trouble shoot:
 2. Check that the signal pins are plugged in to digital pins you have assigned (Not the analog pins, despite radio signals being analog) to in the Arduino code.
 ... - This can be check by verifying that you are getting a signal via the code above. If you are getting no changes in the serial monitor, there might be a problem with the wiring.
 
+
+If you do not have a spare Arduino by you, you can always plug the PWM signal of an ESC into the receiver to see if it is capable of driving the motor directly.
 ---
 A copy of the code can be found [here](https://gist.github.com/Dulluhan/263f37e77abf15455d012e6c37df23db)
