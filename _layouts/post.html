@@ -10,7 +10,64 @@ layout: default
   <div class="post-content" itemprop="articleBody">
     {{ content }}
   </div>
-<time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time>
+  <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time>
+<hr>
+<br>
+<h1> Related Posts </h1>
+{% assign RELATED_POSTS_THRESHOLD = 5 %}
+
+<ul>
+  {% assign related_post_count = 0 %}
+  {% for post in site.related_posts %}
+    {% if related_post_count == RELATED_POSTS_THRESHOLD %}
+      {% break %}
+    {% endif %}
+    {% for tag in post.tags %}
+      {% if page.tags contains tag %}
+        <li>
+          <h3>
+            <a href="{{ site.baseurl }}{{ post.url }}">
+              {{ post.title }}
+              <small>{{ post.date | date_to_string }}</small>
+            </a>
+          </h3>
+        </li>
+        {% assign related_post_count = related_post_count | plus: 1 %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+
+  {% assign posts_left = RELATED_POSTS_THRESHOLD | minus: related_post_count %}
+  {% unless posts_left == 0 %}
+    {% for post in site.related_posts %}
+      {% if posts_left == 0 %}
+        {% break %}
+      {% endif %}
+
+      {% assign already_related = false %}
+      {% for tag in post.tags %}
+        {% if page.tags contains tag %}
+          {% assign already_related = true %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+      {% unless already_related %}
+        {% assign posts_left = posts_left | minus: 1 %}
+        <li>
+          <h3>
+            <a href="{{ site.baseurl }}{{ post.url }}">
+              {{ post.title }}
+              <small>{{ post.date | date_to_string }}</small>
+            </a>
+          </h3>
+        </li>
+      {% endunless %}
+    {% endfor %}
+  {% endunless %}
+</ul>
+
+
 {% if page.comments %}
 <div id="disqus_thread"></div>
     <script type="text/javascript">
@@ -29,5 +86,6 @@ layout: default
     <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
     <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 {% endif %}
+
 
 </article>
