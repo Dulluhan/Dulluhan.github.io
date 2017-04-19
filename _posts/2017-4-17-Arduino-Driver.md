@@ -2,7 +2,7 @@
 layout: post
 title: "Template For Arduino Robot Driver: 80"
 date: 2017-4-17
-tags: Projects Electrical Signals Arduino
+tags: Projects ROS Arduino Robotics
 comments: true
 ---
 Refer to [previous post](http://c4coffee.ca/2016/12/19/A-Simple-Arduino-Robot.html) for a general overview.

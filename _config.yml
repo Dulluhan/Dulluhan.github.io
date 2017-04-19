@@ -26,3 +26,4 @@ highlighter: rouge
 #sitemap settings
 sitemap:file: "../sitemap.xml"
 excerpt_seperator: "<!--more-->"
+include: ["_pages"]
