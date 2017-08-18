@@ -1,8 +1,9 @@
 ---
+title: Arduino Serial Communication Problem and Fix
+date: 2016-03-27 00:00:00 Z
+tags:
+- Arduino
 layout: post
-title: "Arduino Serial Communication Problem and Fix"
-date: 2016-03-27
-tags: Arduino
 comments: true
 ---
 

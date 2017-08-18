@@ -1,10 +1,14 @@
 ---
+title: Tonemapping for HDR Images in Matlab
+date: 2016-11-12 00:00:00 Z
+tags:
+- Projects
+- Electrical
+- Signals
 layout: post
-title: "Tonemapping for HDR Images in Matlab"
-date: 2016-11-12
-tags: Projects Electrical Signals
 comments: true
 ---
+
 In this project I detail the process of preparing and tonemapping a HDR image for viewing via Matlab.
 
 ## Opening HDR Images in Matlab

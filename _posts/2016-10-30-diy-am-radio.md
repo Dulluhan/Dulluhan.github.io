@@ -1,8 +1,10 @@
 ---
+title: 'DIY Crystal AM Radio Design - Part1: Background'
+date: 2016-10-30 00:00:00 Z
+tags:
+- Projects
+- Electrical
 layout: post
-title: "DIY Crystal AM Radio Design - Part1: Background"
-date: 2016-10-30
-tags: Projects Electrical
 comments: true
 ---
 

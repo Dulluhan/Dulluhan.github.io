@@ -1,8 +1,12 @@
 ---
+title: 'Template For Arduino Robot Driver: 20'
+date: 2016-12-19 00:00:00 Z
+tags:
+- Projects
+- ROS
+- Arduino
+- Robotics
 layout: post
-title: "Template For Arduino Robot Driver: 20"
-date: 2016-12-19
-tags: Projects ROS Arduino Robotics
 comments: true
 ---
 

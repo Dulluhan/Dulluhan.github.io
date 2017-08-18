@@ -1,8 +1,9 @@
 ---
+title: Setting Up ChromeOS for ROS
+date: 2016-03-24 00:00:00 Z
+tags:
+- ROS
 layout: post
-title:  "Setting Up ChromeOS for ROS"
-date:   2016-03-24
-tags: ROS
 comments: true
 ---
 

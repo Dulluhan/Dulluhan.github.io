@@ -1,8 +1,9 @@
 ---
+title: ChromeOS as a Robotics Platform
+date: 2016-03-24 06:18:42 Z
+tags:
+- ROS
 layout: post
-title:  "ChromeOS as a Robotics Platform"
-date:   2016-03-23 23:18:42 -0700
-tags: ROS
 comments: true
 ---
 

@@ -1,31 +1,26 @@
-# Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely need to edit after that.
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'jekyll serve'. If you change this file, please restart the server process.
-
-# Site settings
+---
 title: C4Coffee
+timezone: UTC
+collections:
+  posts:
+    title: Posts
+    output: true
+  uploads:
+    title: Uploads
+    output: true
 email: yuanv@alumni.ubc.ca
-#description: > # this means to ignore newlines until "baseurl:" |
-
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://c4coffee.ca" # the base hostname & protocol for your site
+baseurl: ''
+url: http://c4coffee.ca
 github_username: Dulluhan
 linkedin_username: vincentyuan
-
 gems:
- - jekyll-sitemap
- - jekyll-redirect-from
- - jekyll-seo-tag
- - jekyll-feed
-
-# Build settings
+- jekyll-sitemap
+- jekyll-redirect-from
+- jekyll-seo-tag
+- jekyll-feed
 markdown: kramdown
-  # gem:[archivegenerator, monthly_archive_plugin, category_archive_plugin, sitemap_generator]
 highlighter: rouge
-#sitemap settings
 sitemap:file: "../sitemap.xml"
 excerpt_seperator: "<!--more-->"
-include: ["_pages"]
+include:
+- _pages
