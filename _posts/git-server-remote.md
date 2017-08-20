@@ -1,5 +1,6 @@
 ---
-title: Git Server Remote
+title: 2017-08-18-Git Server Remote.md
+published: true
 ---
 
 The whole problem arose when I was trying to figure out to backup a remote server site I just deployed. Not thinking ahead of time, trying to get everything up and running I completely ignored any form of version control. Having been more comfortable with git rather than with perforce I decided that I was to work with this new site through pushing verified local changes to the remote to deploy. After setting up apache, mysql, php and copying all the files to /var/www/html...I realized that I needed to make the folder in /var/www/html my remote origin for this to all work out. 
@@ -26,5 +27,4 @@ Now that the setup is complete you can `git clone` and ssh from other computers 
 
 --- 
 
-In reality the real reason I did this was because I was lazy. I just migrated a local server to cloud openstack server and did not want to deal with latency and setting up Samba. So smart me, since I already had my old server mounted on my workstation, I just pointed the changes so I can update the mounted drive of the old server on Perforce. 
-
+In reality the real reason I did this was because I was lazy. I just migrated a local server to cloud openstack server and did not want to deal with latency and setting up Samba. So smart me, since I already had my old server mounted on my workstation, I just pointed the changes so I can update the mounted drive of the old server on Perforce.
