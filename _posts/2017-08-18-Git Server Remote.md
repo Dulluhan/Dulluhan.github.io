@@ -1,6 +1,11 @@
 ---
 title: Setting apache site as git repo
-date: {}
+date: 2017-08-18
+tags: 
+-apache 
+-server
+-linux
+-git
 published: true
 ---
 
