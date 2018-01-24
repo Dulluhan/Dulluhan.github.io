@@ -10,4 +10,24 @@ Some background Information about the Landzo touch screen. The one bought was be
 
 From research the setup should not have been as complicated as presented. It would've involved a combination of: 
 -Adjusting system output from hdmi to the gpio pins
--Setting up some driver for displaying and another driver for using it as an input device
+-Setting up some driver for displaying and another driver for using it as an input device 
+
+Good thing is that someone has written [scripts](https://github.com/goodtft/LCD-show) specfically for setting these monitors up. 
+
+However, I personally prefer a rotated screen, therefore I had to make some small adjustments. Assuming that my Raspberry Pi is a fresh install, I do the following: 
+
+1. Clone the repository and edit `LCD-show/usr/99-calibration.conf-35` to include swapping of the X and Y axis since the screen will be rotated. This is not the rotation of the display, but rather as the file name suggests, it is for calibration of the touch panel. If this was not changed, the touch input will be registered mirrored along the X and Y axis.  
+eg:  
+>  
+Section "InputClass" 
+        Identifier      "calibration" 
+        MatchProduct    "ADS7846 Touchscreen" 
+        Option  "Calibration"   "3936 227 268 3880" 
+        Option  "SwapAxes"      "1" 
+EndSection 
+> 
+
+
+
+
+
