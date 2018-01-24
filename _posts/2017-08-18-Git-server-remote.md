@@ -1,11 +1,11 @@
 ---
 title: Setting Apache Site as Git Repo
-date: 2017-08-18
+date: 2017-08-18T00:00:00.000Z
 tags:
-- apache
-- server
-- linux
-- git
+  - apache
+  - server
+  - linux
+  - git
 published: true
 layout: post
 comments: true
@@ -23,9 +23,9 @@ Setup is as follows:
 3. Setup to to make 'remote' repo. `mkdir /var/www/html/mysite/mysite.git && cd /var/www/html/mysite/mysite.git`.
 4. `git init --bare`. The difference between bare and non-bare is the existence of your worktree, the live files you are working on. Bare git repos are generally used as remote repos such that the worktree cannot be directly edited for safety. 
 5. Now to setup the hook such that our live website gets update per new commits we want to add a post-receive hook. To do so, `touch /var/www/html/mysite/mysite.git/hooks/post-receive` then add the following:
-> #!/bin/sh
-> GIT_WORK_TREE=/var/www/www.example.org git checkout -f
-> $ chmod +x hooks/post-receive 
+> #!/bin/sh 
+> GIT_WORK_TREE=/var/www/www.example.org git checkout -f 
+> $ chmod +x hooks/post-receive  
 
 6. Adjust the execution permissions `chmod +x /var/www/html/mysite/mysite.git/hooks/post-receive` 
 7. Setup your 'local' repo to push changes to 'remote'. `cd ~/mysite` and `git remote add master /var/www/html/mysite/mysite.git`. 
