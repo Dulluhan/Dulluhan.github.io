@@ -30,20 +30,19 @@ However, I personally prefer a rotated screen, therefore I had to make some smal
 1. Clone the repository and edit `LCD-show/usr/99-calibration.conf-35` to include swapping of the X and Y axis since the screen will be rotated. This is not the rotation of the display, but rather as the file name suggests, it is for calibration of the touch panel. If this was not changed, the touch input will be registered mirrored along the X and Y axis.  
 eg: 
 
->  
+```
 Section "InputClass" 
         Identifier      "calibration" 
         MatchProduct    "ADS7846 Touchscreen" 
         Option  "Calibration"   "3936 227 268 3880" 
         Option  "SwapAxes"      "1" 
 EndSection 
-> 
+```
 
 2. Next to apply the visual rotation, we will need to edit `boot/config.txt` and append `:rotate=270` to the `dtoverlay` line. This should look like the following:  
-
-> 
+```
 dtoverlay=tft35a:rotate=270 
->  
+```
 
 You might notice horizontal display is 270 degrees. 0 and 180 are the vertical orientations. 
 
