@@ -1,3 +1,14 @@
+---
+title: Setting Up Raspberry Pi Touch Screen
+date: 2018-01-14T00:00:00.000Z
+tags:
+  - raspberry pi
+  - electronics
+published: true
+layout: post
+comments: true
+---
+
 ## Setting up Landzo 3.5" Touch Screens
 In recent Raspi projects, it has come to the point where repeatedly plugging and un-plugging of HDMI cables is no longer viable. Hunting of free monitors laying around have also become a hassle that I no longer want to deal with since I enjoy working portably. Wanting to minimize cost for the project, instead of opting for mini hdmi monitors, I found these 3.5" mini monitors that utilize the GPIO ports on the Raspberry-pi's I was working with. Also to minimize cost I opted in buying the cheapest screens I could find at the time. Unfortunate for me, it was cheap enough to not include any paper manuals. 
 
