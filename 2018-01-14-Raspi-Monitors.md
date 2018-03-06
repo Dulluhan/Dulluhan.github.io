@@ -25,7 +25,19 @@ Section "InputClass"
         Option  "Calibration"   "3936 227 268 3880" 
         Option  "SwapAxes"      "1" 
 EndSection 
-> 
+>
+
+2. Next to apply the visual rotation, we will need to edit `boot/config.txt` and append `:rotate=270` to the `dtoverlay` line. This should look like the following: 
+>
+dtoverlay=tft35a:rotate=270 
+>  
+
+You might notice horizontal display is 270 degrees. 0 and 180 are the vertical orientations. 
+
+3. Reboot
+
+Annnd you'redone setting things up. 
+
 
 
 
