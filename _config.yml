@@ -13,7 +13,7 @@ baseurl: ''
 url: http://c4coffee.ca
 github_username: Dulluhan
 linkedin_username: vincentyuan
-gems:
+plugins:
 - jekyll-sitemap
 - jekyll-redirect-from
 - jekyll-seo-tag
